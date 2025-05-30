@@ -1,0 +1,35 @@
+@import './tailwind.css';
+
+/* === Load Dancing Script locally ===
+   Make sure you have these font files in src/assets/fonts/:
+   - DancingScript-Regular.woff2
+   - DancingScript-Regular.woff
+*/
+
+@font-face {
+  font-family: 'Dancing Script';
+  src: url('../assets/fonts/DancingScript-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Global styles */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: 'Plus Jakarta Sans', 'Lexend', sans-serif;
+}
+
+/* Disable default browser password toggle buttons */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear,
+input[type="password"]::-webkit-credentials-auto-fill-button {
+  display: none !important;
+  pointer-events: none;
+  opacity: 0;
+}
+
+/* Add any other global styles below */

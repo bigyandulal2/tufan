@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Primary Colors */
+    --primary-orange: #f04f18;
+    --primary-black: #110d0c;
+    --primary-white: #ffffff;
+    --primary-gray: #dcdcdc;
+
+    /* Secondary Colors */
+    --secondary-gray: #737373;
+    --secondary-dark-gray: #000000;
+    --secondary-light-gray: #0000004c;
+    --secondary-input-border: #0000003f;
+
+    /* Border Colors */
+    --border-gray: #dcdcdc;
+    --border-black: #000000;
+    --border-light: #0000004c;
+    --border-input: #0000003f;
+
+    /* Shadow Colors */
+    --shadow-gray: #888888;
+  }
+}
+
+@layer components {
+
+
+  .input-field {
+    @apply border border-[#0000003f] rounded-[5px] px-2 py-1 w-[138px] h-[21px] text-[14px] focus:outline-none focus:ring-1 focus:ring-[#f04f18];
+  }
+
+  .label-field {
+    @apply text-[17px] font-light leading-[22px] text-black font-['Lexend'] w-[107px] h-[21px];
+  }
+
+  .btn-primary {
+    @apply bg-[#f04f18] text-white font-bold py-2 px-4 rounded-[8px] shadow-md border border-[#dcdcdc];
+  }
+
+  .btn-secondary {
+    @apply bg-[#737373] text-white font-bold py-2 px-4 rounded-[8px] shadow-md border border-[#dcdcdc];
+  }
+
+  .input-field {
+    @apply border border-[#0000003f] rounded-[5px] p-2 w-full;
+  }
+
+  .sidebar-item {
+    @apply flex items-center justify-between w-full px-4 py-2 border border-[#0000004c] rounded-[10px];
+  }
+}
