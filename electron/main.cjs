@@ -5,7 +5,7 @@ function createWindow() {
   const win = new BrowserWindow({
     width: 1200,
     height: 800,
-    icon: path.join(__dirname, '..', 'tufanLogo.ico'), // ✅ correct path
+    icon: path.join(__dirname, '..', 'tufanLogo.ico'), // h correct path
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false
