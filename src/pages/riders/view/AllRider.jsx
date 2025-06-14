@@ -14,36 +14,46 @@ import {
 } from '../../../redux/rider/ridersSlice';
 import ListTable from '../../../components/ui/BranchTable';
 import RenderImage from './RiderImage';
+import { fetchBranches } from '../../../redux/branchSlice';
 
 const AllRiders = () => {
   const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState('All');
+  const fetchedImagesRef = useRef(new Set());
 
   const riders = useSelector(selectRidersItems);
   const pendingRiders = useSelector(selectPendingRidersItems);
   const riderImages = useSelector(selectRiderImages);
   const ridersStatus = useSelector(selectRidersStatus);
   const pendingStatus = useSelector(selectPendingRidersStatus);
-  const fetchedImagesRef = useRef(new Set());
+  const branches = useSelector((state) => state.branches.items);
 
   const isPendingTab = activeTab === 'Pending';
   const dataToDisplay = isPendingTab ? pendingRiders : riders;
   const dataStatus = isPendingTab ? pendingStatus : ridersStatus;
 
+
+
   useEffect(() => {
-    dispatch(isPendingTab ? fetchPendingRiders() : fetchRiders());
-  }, [dispatch, activeTab]);
+    dispatch(fetchBranches());
+  }, [dispatch]);
 
+  // Fetch riders based on active tab
+  useEffect(() => {
+    if (isPendingTab) {
+      dispatch(fetchPendingRiders());
+    } else {
+      dispatch(fetchRiders());
+    }
+  }, [dispatch, activeTab, isPendingTab]);
 
-
+  // Fetch rider images if not already loaded
   useEffect(() => {
     if (dataStatus !== 'succeeded') return;
 
     const imagesToFetch = dataToDisplay
       .map((r) => r?.user?.imageName)
-      .filter(
-        (img) => img && !riderImages[img] && !fetchedImagesRef.current.has(img)
-      );
+      .filter((img) => img && !riderImages[img] && !fetchedImagesRef.current.has(img));
 
     imagesToFetch.forEach((img) => {
       fetchedImagesRef.current.add(img);
@@ -51,38 +61,42 @@ const AllRiders = () => {
     });
   }, [dataToDisplay, dataStatus, riderImages, dispatch]);
 
+  // Format data for the table
   const formattedData = useMemo(() => {
     return (dataToDisplay || []).map((rider) => {
       const imgName = rider?.user?.imageName;
       const imageUrl = riderImages[imgName];
+      const riderBranchId = rider?.user?.branchId;
+      console.log('Branch ID:', riderBranchId);
+      console.log('Branch :', branches);
+
+
+
+
+      // Get branch name using branchId
+      const branch = branches.find((b) => String(b.id) === String(riderBranchId));
+      const branchName = branch?.name || 'N/A';
 
       return {
         id: rider.id,
         name: rider.user?.name || 'No Name',
         image: <RenderImage imageUrl={imageUrl} />,
-
-        /* imageUrl ? (
-        <img
-          src={imageUrl}
-          alt="Rider"
-          className="h-20 w-15 object-cover rounded-full"
-        />
-        ) : (
-        <div className="h-10 w-10 flex items-center justify-center bg-gray-200 rounded-full text-xs text-gray-500">
-          Loading...
-        </div>
-        ),*/
         category: rider.category?.categoryTitle || 'N/A',
+        BranchName: branchName,
         balance: rider.balance ?? 0,
         status: rider.status || 'inactive',
       };
     });
-  }, [dataToDisplay, riderImages]);
+  }, [dataToDisplay, riderImages, branches]);
 
-  const tabButtons = useMemo(() => [
-    { label: `All (${riders.length})`, value: 'All' },
-    { label: `Pending (${pendingRiders.length})`, value: 'Pending' },
-  ], [riders.length, pendingRiders.length]);
+  // Tab button labels
+  const tabButtons = useMemo(
+    () => [
+      { label: `All (${riders.length})`, value: 'All' },
+      { label: `Pending (${pendingRiders.length})`, value: 'Pending' },
+    ],
+    [riders.length, pendingRiders.length]
+  );
 
   return (
     <div className="flex-1">
@@ -93,10 +107,10 @@ const AllRiders = () => {
 
         <ListTable
           data={formattedData}
-          headers={['ID', 'Name', 'Image', 'Category', 'Balance', 'Status']}
-          rowDataKeys={['id', 'name', 'image', 'category', 'balance', 'status']}
+          headers={['ID', 'Name', 'Image', 'Category', 'Branch Name', 'Balance', 'Status']}
+          rowDataKeys={['id', 'name', 'image', 'category', 'BranchName', 'balance', 'status']}
           module="riders"
-          searchableFields={['name', 'category', 'status']}
+          searchableFields={['name', 'category', 'status', 'BranchName']}
           buttons={tabButtons}
           activeTab={activeTab}
           setActiveTab={setActiveTab}

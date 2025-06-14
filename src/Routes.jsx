@@ -65,6 +65,11 @@ const AppRoutes = () => {
               <Route path="managers/create" element={<ManagerCreationPage />} />
               <Route path="managers/:id" element={<ManagerDetailsPage />} />
               <Route path="managers/update/:id" element={<UpdateManagerPage />} />
+
+              <Route path="prices" element={<AllPrice />} />
+              <Route path="prices/create" element={<PriceCreationPage />} />
+              <Route path="prices/:id" element={<PriceDetailsPage />} />
+              <Route path="prices/update/:id" element={<UpdatePricePage />} />
             </Route>
 
             {/* Riders, Managers can see */}
@@ -73,10 +78,7 @@ const AppRoutes = () => {
             <Route path="riders/:id" element={<RiderDetailsPage />} />
 
 
-            <Route path="prices" element={<AllPrice />} />
-            <Route path="prices/create" element={<PriceCreationPage />} />
-            <Route path="prices/:id" element={<PriceDetailsPage />} />
-            <Route path="prices/update/:id" element={<UpdatePricePage />} />
+
 
 
 

@@ -9,6 +9,7 @@ export const loadAllRider = async () => {
   });
 };
 
+
 // ✅ Load rider by ID
 export const getRiderById = async (riderId) => {
   return handleRequest(() => privateAxios.get(`/riders/${riderId}`), {
@@ -95,3 +96,8 @@ export const getRiderImage = async (fileName) => {
     throw new Error("Failed to load rider image.");
   }
 };
+
+
+
+
+

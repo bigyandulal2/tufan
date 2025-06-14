@@ -1,14 +1,14 @@
 {
   "name": "tufan",
   "private": true,
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Your app description here",
   "author": "Your Name <karkialish2212@gmail.com>",
   "type": "module",
   "main": "electron/main.cjs",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && npm run dist",
     "start": "electron .",
     "start:prod": "electron electron/main.cjs",
     "preview": "vite preview",

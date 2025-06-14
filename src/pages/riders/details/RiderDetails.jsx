@@ -3,134 +3,176 @@ import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { fetchRiderImage } from '../../../redux/rider/ridersSlice';
 import { selectRiderImages } from '../../../redux/rider/riderSelectors';
+import { fetchBranchById } from '../../../redux/branchSlice';
+import { fetchVehicleImage, fetchVehicles } from '../../../redux/vehicleSlice';
+import { selectVehicleImages } from '../../../redux/vehicleSelectors';
 import userFallbackImage from '../../../assets/user.jpg';
 import documentPlaceholder from '../../../assets/document-placeholder.png';
 
 const RiderDetails = ({ rider }) => {
   const dispatch = useDispatch();
   const riderImages = useSelector(selectRiderImages);
-  const fetchedImagesRef = useRef(new Set());
-  const [modalImage, setModalImage] = useState(null);
+  const vehicleImages = useSelector(selectVehicleImages);
+  const fetchedRiderImagesRef = useRef(new Set());
+  const fetchedVehicleImagesRef = useRef(new Set());
 
-  const imageFields = [
+  const [modalImage, setModalImage] = useState(null);
+  const [branchData, setBranchData] = useState(null);
+  const [vehicleModalImage, setVehicleModalImage] = useState(null);
+
+  const branches = useSelector((state) => state.branches.items);
+  const selectedBranch = useSelector((state) => state.branches.selectedBranch);
+  const vehicles = useSelector((state) => state.vehicles.items);
+
+  const branchId = rider.user?.branchId;
+  const userId = rider.user?.id;
+
+  const riderImageFields = [
     'selfieWithIdCard',
     'license_Image',
     'citizen_Front',
     'citizen_Back',
     'nid_Img',
-    'imageName', // Profile image
+    'imageName',
   ];
 
   useEffect(() => {
-    imageFields.forEach((field) => {
+    if (userId) {
+      dispatch(fetchVehicles(userId));
+    }
+  }, [userId, dispatch]);
+
+  useEffect(() => {
+    if (branchId && !branchData) {
+      const existingBranch =
+        branches.find((b) => String(b.id) === String(branchId)) || selectedBranch;
+      if (existingBranch) {
+        setBranchData(existingBranch);
+      } else {
+        dispatch(fetchBranchById(branchId)).then((res) => {
+          if (res?.payload) {
+            setBranchData(res.payload);
+          }
+        });
+      }
+    }
+  }, [branchId, branchData, branches, selectedBranch, dispatch]);
+
+  useEffect(() => {
+    riderImageFields.forEach((field) => {
       const imageName = rider.user?.[field] || rider?.[field];
-      if (imageName && !riderImages[imageName] && !fetchedImagesRef.current.has(imageName)) {
-        fetchedImagesRef.current.add(imageName);
+      if (imageName && !riderImages[imageName] && !fetchedRiderImagesRef.current.has(imageName)) {
+        fetchedRiderImagesRef.current.add(imageName);
         dispatch(fetchRiderImage(imageName));
       }
     });
   }, [rider, riderImages, dispatch]);
 
+  useEffect(() => {
+    vehicles.forEach((vehicle) => {
+      ['billBook1', 'billBook2', 'vechicleImg'].forEach((field) => {
+        const imageName = vehicle?.[field];
+        if (imageName && !vehicleImages[imageName] && !fetchedVehicleImagesRef.current.has(imageName)) {
+          fetchedVehicleImagesRef.current.add(imageName);
+          dispatch(fetchVehicleImage(imageName));
+        }
+      });
+    });
+  }, [vehicles, vehicleImages, dispatch]);
+
+  const getImageUrl = (imageName, source) => imageName ? source[imageName] || null : null;
   const formatDate = (dateArray) => {
-    if (!Array.isArray(dateArray) || dateArray.length < 5) return 'N/A';
+    if (!Array.isArray(dateArray)) return 'Not Provided';
     const [year, month, day, hour, minute] = dateArray;
     return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')} ${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
   };
 
-  const getImageUrl = (imageName) => imageName ? riderImages[imageName] || null : null;
-
-  const profileImageName = rider?.user?.imageName;
-  const profileImageUrl = getImageUrl(profileImageName);
+  const profileImageUrl = getImageUrl(rider?.user?.imageName, riderImages);
 
   return (
     <div className="px-4 md:px-10 pb-10">
-      {/* Profile Image */}
       <div className="flex justify-center mb-6">
-        {rider?.user?.imageName && !profileImageUrl ? (
-          <div className="w-40 h-40 flex items-center justify-center rounded-full bg-gray-100 border shadow text-gray-500 text-sm italic">
-            Loading...
-          </div>
-        ) : (
-          <img
-            src={profileImageUrl || userFallbackImage}
-            alt="Rider Profile"
-            className="w-40 h-40 rounded-full object-cover border shadow cursor-pointer hover:scale-105 transition-transform"
-            onClick={() => setModalImage(profileImageUrl || userFallbackImage)}
-          />
-        )}
+        <img
+          src={profileImageUrl || userFallbackImage}
+          alt="Rider Profile"
+          className="w-40 h-40 rounded-full object-cover border shadow cursor-pointer hover:scale-105 transition-transform"
+          onClick={() => setModalImage(profileImageUrl || userFallbackImage)}
+        />
       </div>
+      <hr className="border-t border-[#f04f18] mb-2" />
+
 
       <Section title="👤 User Information">
-        <InfoItem label="Name" value={rider.user?.name || 'N/A'} />
-        <InfoItem label="Email" value={rider.user?.email || 'N/A'} />
-        <InfoItem label="Mobile No" value={rider.user?.mobileNo || 'N/A'} />
-        <InfoItem label="Branch" value={rider.user?.branch_Name || 'N/A'} />
+        <InfoItem label="Name" value={rider.user?.name || 'Not Provided'} />
+        <InfoItem label="Email" value={rider.user?.email || 'Not Provided'} />
+        <InfoItem label="Mobile No" value={rider.user?.mobileNo || 'Not Provided'} />
+        <InfoItem label="Branch Name" value={branchData?.name || 'Not Provided'} />
       </Section>
+      <hr className="border-t border-[#f04f18] mb-2" />
 
-      <Section title="🛵 Rider Information">
-        <InfoItem label="Date of Birth" value={rider.date_Of_Birth || 'N/A'} />
-        <InfoItem label="License Number" value={rider.driver_License || 'N/A'} />
-        <InfoItem label="Citizenship Number" value={rider.citizen_No || 'N/A'} />
-        <InfoItem label="NID Number" value={rider.nid_No || 'N/A'} />
-      </Section>
 
-      <Section title="🚗 Vehicle Category">
-        <InfoItem label="Category" value={rider.category?.categoryTitle || 'N/A'} />
+      <Section title="🚗 Vehicle Information">
+        {vehicles.length > 0 ? (
+          vehicles.map((vehicle, index) => (
+            <React.Fragment key={index}>
+              <InfoItem label={`Vehicle ${index + 1} - Type`} value={vehicle.vehicleType || 'Not Provided'} />
+              <InfoItem label="Brand Name" value={vehicle.vehicleBrand || 'Not Provided'} />
+              <InfoItem label="Vehicle Number" value={vehicle.vehicleNumber || 'Not Provided'} />
+              <InfoItem label="Production Year" value={vehicle.productionYear?.split('T')[0] || 'Not Provided'} />
+              <InfoItem label="Category" value={vehicle.category?.categoryTitle || 'Not Provided'} />
+              {['vechicleImg', 'billBook1', 'billBook2',].map((field) => {
+                const imgName = vehicle[field];
+                const imgUrl = getImageUrl(imgName, vehicleImages);
+                return (
+                  <ImageItem
+                    key={field}
+                    label={field}
+                    src={imgUrl}
+                    loading={imgName && !imgUrl}
+                    fallback={documentPlaceholder}
+                    onClick={() => imgUrl && setVehicleModalImage(imgUrl)}
+                  />
+                );
+              })}
+            </React.Fragment>
+          ))
+        ) : (
+          <div className="text-center text-gray-500 italic mt-6">No vehicles found.</div>
+        )}
       </Section>
+      <hr className="border-t border-[#f04f18] mb-2" />
 
-      <Section title="📊 Status & Meta Info">
-        <InfoItem label="Status" value={rider.status || 'N/A'} className="text-green-600" />
-        <InfoItem label="Balance" value={`Rs. ${rider.balance ?? 0}`} />
-        <InfoItem label="Added Date" value={formatDate(rider.addedDate)} />
-        <InfoItem label="Updated Date" value={formatDate(rider.updatedDate)} />
-      </Section>
 
       <Section title="📁 Documents">
-        {['selfieWithIdCard', 'license_Image', 'citizen_Front', 'citizen_Back', 'nid_Img'].map((field) => {
-          const labelMap = {
-            selfieWithIdCard: 'Selfie with ID Card',
-            license_Image: 'License Image',
-            citizen_Front: 'Citizenship Front',
-            citizen_Back: 'Citizenship Back',
-            nid_Img: 'NID Image',
-          };
-
+        {riderImageFields.filter((field) => field !== 'imageName').map((field) => {
           const imageName = rider[field];
-          const imageUrl = getImageUrl(imageName);
-          const isLoading = imageName && !imageUrl;
-
+          const imageUrl = getImageUrl(imageName, riderImages);
           return (
             <ImageItem
               key={field}
-              label={labelMap[field]}
+              label={field}
               src={imageUrl}
-              loading={isLoading}
+              loading={imageName && !imageUrl}
               fallback={documentPlaceholder}
               onClick={() => imageUrl && setModalImage(imageUrl)}
             />
           );
         })}
       </Section>
+      <hr className="border-t border-[#f04f18] mb-2" />
 
-      {/* Modal for Image Preview */}
+
+      {/* Modals */}
       {modalImage && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center z-50"
-          onClick={() => setModalImage(null)}
-        >
-          <img
-            src={modalImage}
-            alt="Full Preview"
-            className="max-h-[90%] max-w-[90%] rounded shadow-xl transition-all duration-300"
-            onClick={(e) => e.stopPropagation()}
-          />
-        </div>
+        <ModalImage src={modalImage} onClose={() => setModalImage(null)} />
+      )}
+      {vehicleModalImage && (
+        <ModalImage src={vehicleModalImage} onClose={() => setVehicleModalImage(null)} />
       )}
     </div>
   );
 };
 
-// Reusable Section Wrapper
 const Section = ({ title, children }) => (
   <div className="mb-8">
     <h3 className="text-xl font-bold text-gray-700 mb-4">{title}</h3>
@@ -138,7 +180,6 @@ const Section = ({ title, children }) => (
   </div>
 );
 
-// Reusable Info Item
 const InfoItem = ({ label, value, className }) => (
   <div>
     <h4 className="text-sm text-gray-500">{label}</h4>
@@ -146,7 +187,6 @@ const InfoItem = ({ label, value, className }) => (
   </div>
 );
 
-// Image Item with loading + fallback + click preview
 const ImageItem = ({ label, src, loading, fallback, onClick }) => (
   <div>
     <h4 className="text-sm text-gray-500 mb-1">{label}</h4>
@@ -162,6 +202,20 @@ const ImageItem = ({ label, src, loading, fallback, onClick }) => (
         onClick={onClick}
       />
     )}
+  </div>
+);
+
+const ModalImage = ({ src, onClose }) => (
+  <div
+    className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center z-50"
+    onClick={onClose}
+  >
+    <img
+      src={src}
+      alt="Preview"
+      className="max-h-[90%] max-w-[90%] rounded shadow-xl"
+      onClick={(e) => e.stopPropagation()}
+    />
   </div>
 );
 
