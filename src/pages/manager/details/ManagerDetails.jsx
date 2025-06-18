@@ -1,28 +1,57 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import userIcon from "../../../assets/user.jpg";
 import { MapPin } from "lucide-react";
 import RenderImage from "../../riders/view/RiderImage";
+import { useDispatch, useSelector } from "react-redux";
+import { selectManagerImages } from "../../../redux/manager/managerSelectors";
+import { fetchManagerImage } from "../../../redux/manager/managersSlice";
 
 // Reusable info display
 const InfoItem = ({ label, value }) => (
-  <div className="ml-4">
+  <div className="break-words w-full">
     <h4 className="text-sm font-medium text-gray-600">{label}</h4>
-    <p className="text-base font-semibold text-gray-900">{value ?? "N/A"}</p>
+    <p className="text-base font-semibold text-gray-900 break-all">{value ?? "N/A"}</p>
   </div>
 );
 
-// Section layout
+// Section layout with responsive grid
 const Section = ({ title, children }) => (
   <div className="mb-6">
-    <h3 className="text-lg font-bold text-gray-800 mb-3 ml-4">{title}</h3>
-    <div className="grid grid-cols-1 md:grid-cols-2 ml-8 gap-4">{children}</div>
+    <h3 className="text-lg font-bold text-gray-800 mb-3">{title}</h3>
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-x-6 gap-y-4">
+      {children}
+    </div>
   </div>
 );
 
-// Image component with zoom, using RenderImage inside
+// Image component with zoom
 const ImageBox = ({ imageName, fallback, alt }) => {
   const [isZoomed, setIsZoomed] = useState(false);
+  const dispatch = useDispatch();
+  const managerImages = useSelector(selectManagerImages);
+  const fetchedRef = useRef(new Set());
+
+  useEffect(() => {
+    if (imageName && !fetchedRef.current.has(imageName)) {
+      fetchedRef.current.add(imageName);
+      dispatch(fetchManagerImage(imageName));
+    }
+  }, [imageName, dispatch]);
+
+  // Get actual image from Redux
+  const imageData = managerImages[imageName];
+  console.log('imageData', managerImages[imageName]);
+
+  // ✅ Detect whether it's blob or base64
+  const isBlob = imageData?.startsWith("blob:");
+  const isBase64 = imageData?.startsWith("data:image");
+  // Final source for image tag
+  const imageSrc = imageData
+    ? isBlob || isBase64
+      ? imageData
+      : `data:image/jpeg;base64,${imageData}`
+    : fallback;
 
   return (
     <>
@@ -32,10 +61,10 @@ const ImageBox = ({ imageName, fallback, alt }) => {
           className="w-24 h-24 rounded-full border mx-auto cursor-pointer overflow-hidden"
           onClick={() => setIsZoomed(true)}
         >
-          <RenderImage
-            imageName={imageName}
+          <img
+            src={imageSrc}
             fallback={fallback}
-            className="w-24 h-24 rounded-full object-cover"
+            className="w-full h-full rounded-full object-cover"
             alt={alt}
           />
         </div>
@@ -47,7 +76,7 @@ const ImageBox = ({ imageName, fallback, alt }) => {
           onClick={() => setIsZoomed(false)}
         >
           <div
-            className="max-w-full max-h-full rounded-xl shadow-xl"
+            className="max-w-[90%] max-h-[90%] rounded-xl shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
             <RenderImage
@@ -63,7 +92,6 @@ const ImageBox = ({ imageName, fallback, alt }) => {
   );
 };
 
-// Main manager details component
 const ManagerDetails = ({ manager }) => {
   if (!manager || !manager.user || !manager.branch) {
     return (
@@ -78,8 +106,8 @@ const ManagerDetails = ({ manager }) => {
   const role = user?.roles?.[0]?.name;
 
   return (
-    <div className="bg-white shadow rounded-xl p-6 border border-gray-300">
-      {/* 👤 Image with zoom */}
+    <div className="bg-white shadow rounded-xl p-4 sm:p-6 border border-gray-300 max-w-4xl mx-auto">
+      {/* 👤 Manager Image */}
       <ImageBox imageName={user?.imageName} fallback={userIcon} alt={user?.name || "Manager"} />
 
       {/* 👤 User Info */}

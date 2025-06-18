@@ -1,6 +1,6 @@
 // src/store/branchSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { deleteManagerApi, getManagerById, loadAllManager } from '../../services/manager';
+import { deleteManagerApi, getManagerById, getManagerImage, loadAllManager } from '../../services/manager';
 
 export const fetchManagers = createAsyncThunk(
   'managers/fetchManagers',
@@ -39,6 +39,19 @@ export const deleteManager = createAsyncThunk(
   }
 );
 
+
+export const fetchManagerImage = createAsyncThunk(
+  'managers/fetchManagerImage',
+  async (fileName, { rejectWithValue }) => {
+    try {
+      const imageUrl = await getManagerImage(fileName);
+      return { fileName, imageUrl };
+    } catch {
+      return rejectWithValue({ fileName, error: 'Error loading manager image' });
+    }
+  }
+);
+
 const managersSlice = createSlice({
   name: 'managers',
   initialState: {
@@ -46,12 +59,21 @@ const managersSlice = createSlice({
     items: [],
     status: 'idle',
     error: null,
+
+    imageUrls: {},
+    imageStatuses: {},
+    imageErrors: {},
   },
   reducers: {
     clearManagers: (state) => {
       state.items = [];
       state.selectedManager = null;
       state.status = 'idle';
+
+
+      state.imageUrls = {};
+      state.imageStatuses = {};
+      state.imageErrors = {};
     },
     clearSelectedManager: (state) => {
       state.selectedManager = null;
@@ -90,6 +112,23 @@ const managersSlice = createSlice({
       })
       .addCase(deleteManager.rejected, (state, action) => {
         state.error = action.payload;
+      })
+
+
+
+      .addCase(fetchManagerImage.pending, (state, action) => {
+        const fileName = action.meta.arg;
+        state.imageStatuses[fileName] = 'loading';
+      })
+      .addCase(fetchManagerImage.fulfilled, (state, action) => {
+        const { fileName, imageUrl } = action.payload;
+        state.imageUrls[fileName] = imageUrl;
+        state.imageStatuses[fileName] = 'succeeded';
+      })
+      .addCase(fetchManagerImage.rejected, (state, action) => {
+        const { fileName, error } = action.payload;
+        state.imageStatuses[fileName] = 'failed';
+        state.imageErrors[fileName] = error;
       });
   },
 });

@@ -38,4 +38,19 @@ export const deleteManagerApi = async (managerId) => {
     onErrorMessage: "Failed to delete manager.",
   });
 
+
+
+};
+
+
+export const getManagerImage = async (fileName) => {
+  try {
+    const response = await privateAxios.get(`/users/image/${fileName}`, {
+      responseType: 'blob',
+    });
+    return URL.createObjectURL(response.data);
+  } catch (error) {
+    // Not using handleRequest here because we return blob
+    throw new Error("Failed to load Manager image.");
+  }
 };

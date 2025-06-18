@@ -26,7 +26,6 @@ const RiderDetails = ({ rider }) => {
 
   const branchId = rider.user?.branchId;
   const userId = rider.user?.id;
-
   const riderImageFields = [
     'selfieWithIdCard',
     'license_Image',
@@ -111,6 +110,16 @@ const RiderDetails = ({ rider }) => {
       <hr className="border-t border-[#f04f18] mb-2" />
 
 
+      <Section title="🛵 Rider Information">
+        <InfoItem label="Date of Birth" value={rider.date_Of_Birth || 'N/A'} />
+        <InfoItem label="License Number" value={rider.driver_License || 'N/A'} />
+        <InfoItem label="Citizenship Number" value={rider.citizen_No || 'N/A'} />
+        <InfoItem label="NID Number" value={rider.nid_No || 'N/A'} />
+      </Section>
+      <hr className="border-t border-[#f04f18] mb-2" />
+
+
+
       <Section title="🚗 Vehicle Information">
         {vehicles.length > 0 ? (
           vehicles.map((vehicle, index) => (
@@ -141,6 +150,15 @@ const RiderDetails = ({ rider }) => {
         )}
       </Section>
       <hr className="border-t border-[#f04f18] mb-2" />
+
+      <Section title="📊 Status & Meta Info">
+        <InfoItem label="Status" value={rider.status || 'N/A'} className="text-green-600" />
+        <InfoItem label="Balance" value={`Rs. ${rider.balance ?? 0}`} />
+        <InfoItem label="Added Date" value={formatDate(rider.addedDate)} />
+        <InfoItem label="Updated Date" value={formatDate(rider.updatedDate)} />
+      </Section>
+      <hr className="border-t border-[#f04f18] mb-2" />
+
 
 
       <Section title="📁 Documents">

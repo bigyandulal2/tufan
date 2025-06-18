@@ -1,3 +1,5 @@
+import { ROLE_ADMIN } from "../constant/role";
+
 // 🔐 Configuration
 const STORAGE_KEY = "authData"; // avoid generic names like "data"
 const useSessionStorage = true; // change to true if you prefer sessionStorage
@@ -41,7 +43,7 @@ export const isLoggedIn = () => {
 
 // 🔐 Perform login and store auth data
 export const doLogin = (data, onSuccess, onFail) => {
-  const allowedRoles = ["ROLE_", "Role_B-MANAGER"]; // define allowed roles
+  const allowedRoles = [ROLE_ADMIN, "Role_B-MANAGER"]; // define allowed roles
 
   // ✅ Properly extract roles from user
   const roles = data?.user?.roles?.map(r => r.name);

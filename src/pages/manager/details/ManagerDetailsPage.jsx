@@ -26,6 +26,8 @@ const ManagerDetailsPage = () => {
     }
   }, [id, dispatch, manager]);
 
+  console.log(manager)
+
   const handleUpdateClick = () => {
     navigate(`/admin/managers/update/${id}`);
   };

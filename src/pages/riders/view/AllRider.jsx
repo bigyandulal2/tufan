@@ -67,8 +67,8 @@ const AllRiders = () => {
       const imgName = rider?.user?.imageName;
       const imageUrl = riderImages[imgName];
       const riderBranchId = rider?.user?.branchId;
-      console.log('Branch ID:', riderBranchId);
-      console.log('Branch :', branches);
+      console.log('Branch ID:',);
+      console.log('Branch :',);
 
 
 

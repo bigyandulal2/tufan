@@ -13,6 +13,11 @@ export const selectSelectedManager = createSelector(
   [selectManagersState],
   (managersState) => managersState?.selectedManager || null
 );
+// redux/manager/managerSelectors.js
+export const selectManagerById = (state, managerId) => {
+  return state.managers.list.find(mgr => mgr.id === managerId);
+};
+
 
 
 // Memoized selector for status
@@ -25,4 +30,31 @@ export const selectManagersError = createSelector(
   [selectManagersState],
   (managersState) => managersState?.error || null
 );
+
+
+export const selectManagerImages = createSelector(
+  [selectManagersState],
+  (managersState) => managersState?.imageUrls || {}
+);
+
+
+
+// 🔹 Image by filename
+export const selectManagerImageByFileName = (fileName) =>
+  createSelector(
+    [selectManagersState],
+    (managersState) => managersState?.imageUrls?.[fileName] || null
+  );
+
+export const selectManagerImageStatusByFileName = (fileName) =>
+  createSelector(
+    [selectManagersState],
+    (managersState) => managersState?.imageStatuses?.[fileName] || 'idle'
+  );
+
+export const selectManagerImageErrorByFileName = (fileName) =>
+  createSelector(
+    [selectManagersState],
+    (managersState) => managersState?.imageErrors?.[fileName] || null
+  );
 
