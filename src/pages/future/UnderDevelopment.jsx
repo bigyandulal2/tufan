@@ -45,7 +45,7 @@ const UnderDevelopment = () => {
       <div className="text-center space-y-4 mb-12">
         <h2 className="text-5xl font-bold" data-aos="fade-down">🚧 Under Development</h2>
         <p className="text-lg text-gray-300 max-w-xl mx-auto" data-aos="fade-up" data-aos-delay="200">
-          We're working hard to build something amazing. Stay tuned!
+          We're working hard to build something amazing. Stay tunedeeeeeeeeeee!
         </p>
       </div>
 
