@@ -43,7 +43,7 @@ const UnderDevelopment = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 to-gray-900 text-white flex flex-col items-center justify-center px-6 py-12">
       <div className="text-center space-y-4 mb-12">
-        <h1 className="text-5xl font-bold" data-aos="fade-down">🚧 Under Development</h1>
+        <h2 className="text-5xl font-bold" data-aos="fade-down">🚧 Under Development</h2>
         <p className="text-lg text-gray-300 max-w-xl mx-auto" data-aos="fade-up" data-aos-delay="200">
           We're working hard to build something amazing. Stay tuned!
         </p>
@@ -65,7 +65,7 @@ const UnderDevelopment = () => {
       </div>
 
       <footer className="mt-20 text-gray-400 text-sm" data-aos="fade-up" data-aos-delay="700">
-        &copy; 2025 tufan. All rights reserved.
+        &copy; 2025 Tufan. All rights reserved.
       </footer>
     </div>
   );
