@@ -63,6 +63,8 @@
     "extends": null,
     "appId": "com.tufan.desktopapp",
     "productName": "TufanApp",
+    "publish": null,
+
    
     "files": [
       "dist/**/*",
