@@ -63,7 +63,7 @@
     "extends": null,
     "appId": "com.tufan.desktopapp",
     "productName": "TufanApp",
-    "icon": "tufanLogo.ico",
+   
     "files": [
       "dist/**/*",
       "electron/**/*",
