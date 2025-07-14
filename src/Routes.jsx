@@ -25,6 +25,7 @@ import PriceCreationPage from './pages/price/create/PriceCreationPage';
 import UpdatePricePage from './pages/price/update/UpdatePricePage';
 import PriceDetailsPage from './pages/price/details/PriceDetailsPage';
 import SplashScreen from './components/common/SplashScreen';
+import UpdateRider from './pages/riders/view/UpdateRider';
 
 const AppRoutes = () => {
   const [showSplash, setShowSplash] = useState(true);
@@ -76,6 +77,7 @@ const AppRoutes = () => {
             <Route path="revenue" element={<ShowStatementPage />} />
             <Route path="riders" element={<AllRiders />} />
             <Route path="riders/:id" element={<RiderDetailsPage />} />
+            <Route path="riders/update/:id" element={< UpdateRider/>} />
 
 
 

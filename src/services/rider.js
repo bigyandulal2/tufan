@@ -76,6 +76,9 @@ export const approveRiderApi = async (id) => {
   });
 };
 
+
+
+
 // ✅ Delete rider
 export const deleteRiderApi = async (id) => {
   return handleRequest(() => privateAxios.delete(`/rider/${id}`), {
@@ -97,6 +100,81 @@ export const getRiderImage = async (fileName) => {
   }
 };
 
+  // ✅ Retrieve rider details
+export const retrieveRiderDetailsApi = async (id) => {
+  return handleRequest(() => privateAxios.get(`/riders/${id}`), {
+    onSuccessMessage: "Rider details retrieved successfully.",
+    onErrorMessage: "Failed to retrieve rider details.",
+  });
+}
+  
+// ✅ Update rider details
+export const updateRiderDetailsApi = async (id, riderData) => {
+  return handleRequest(() =>
+    privateAxios.put(`/rider/${id}`, riderData),
+    {
+      onSuccessMessage: "Rider details updated successfully.",
+      onErrorMessage: "Failed to update rider details.",
+    }
+  );
+};
+
+// ✅ Upload rider document
+export const uploadRiderFileApi = async (riderId, file, fileType) => {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("fileType", fileType);
+
+  return handleRequest(() =>
+    privateAxios.post(`/rider/file/upload/${riderId}`, formData),
+    {
+      onSuccessMessage: `${fileType} uploaded.`,
+      onErrorMessage: `Failed to upload ${fileType}.`,
+    }
+  );
+};
+
+// ✅ Update vehicle details
+export const updateVehicleDetailsApi = async (vehicleId, vehicleData) => {
+  return handleRequest(() =>
+    privateAxios.put(`/vehicles/${vehicleId}`, vehicleData),
+    {
+      onSuccessMessage: "Vehicle details updated successfully.",
+      onErrorMessage: "Failed to update vehicle details.",
+    }
+  );
+};
+
+// ✅ Upload vehicle file (bluebook1, bluebook2, vehicleImg)
+export const uploadVehicleFileApi = async (vehicleId, file, type) => {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const urlMap = {
+    billBook1: "bluebook1",
+    billBook2: "bluebook2",
+    vehicleImg: "image",
+  };
+
+  return handleRequest(() =>
+    privateAxios.post(`/vehicles/${urlMap[type]}/upload/${vehicleId}`, formData),
+    {
+      onSuccessMessage: `${type} uploaded.`,
+      onErrorMessage: `Failed to upload ${type}.`,
+    }
+  );
+};
+
+// ✅ Revert rider status to pending
+export const RevertRiderStatusApi = async (id) => {
+  return handleRequest(() => privateAxios.put(`/${id}/makepending`), {
+    onSuccessMessage: "Rider status reverted to pending.",
+    onErrorMessage: "Failed to revert rider status.",
+    fallbackOn500: {
+      notifyMessage: "Status likely reverted, but backend returned an error.",
+    },
+  });
+};
 
 
 

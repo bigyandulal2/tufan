@@ -5,10 +5,12 @@ import { toast } from 'react-toastify';
 import { fetchRiderById } from '../../../redux/rider/ridersSlice';
 import RiderDetails from './RiderDetails';
 import Button from '../../../components/ui/Button';
+
 import {
   approveRiderApi,
   deleteRiderApi,
   rejectRiderApi,
+  RevertRiderStatusApi,
 } from '../../../services/rider';
 
 const RiderDetailsPage = () => {
@@ -25,6 +27,7 @@ const RiderDetailsPage = () => {
 
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
 
   useEffect(() => {
@@ -53,6 +56,25 @@ const RiderDetailsPage = () => {
     }
   };
 
+
+  // NEED TO CHANGE updateRiderStatusApi TO handleRevertToPending
+  // ✅ Revert rider status to pending
+  const handleRevertToPending = async () => {
+    if (loading) return;
+    setLoading(true);
+    try {
+      await RevertRiderStatusApi(id,);
+      toast.success('Rider status reverted to pending');
+      refreshDetails();
+      navigate('/admin/riders');
+    } catch (error) {
+      toast.error('Failed to revert status');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
   const handleReject = async () => {
 
     if (!rejectReason.trim()) {
@@ -74,6 +96,10 @@ const RiderDetailsPage = () => {
       setRejecting(false); // ✅ Reset loading state
     }
   };
+
+  const RedirectUpdate = () => {
+    navigate(`/admin/riders/update/${id}`);
+  }
 
   const handleDelete = async () => {
     if (loading) return; // ⛔ Prevent double calls
@@ -119,17 +145,42 @@ const RiderDetailsPage = () => {
                   >
                     {rejecting ? " Rejecting..." : " Reject"}
                   </Button>
+
+
+                  <Button
+                    className="w-[120px] h-[39px] flex justify-center items-center bg-blue-600 hover:bg-blue-800"
+
+                    onClick={RedirectUpdate}
+                  >
+                    {loading ? "  Updating..." : "Update"}
+                  </Button>
+
                 </>
               )}
+
+
 
               {(rider.status === 'APPROVED' || rider.status === 'REJECTED') && (
                 <Button
                   className="w-[120px] h-[39px] flex justify-center items-center bg-red-600 hover:bg-red-800"
-                  onClick={() => setShowDeleteModal(true)}
+                  onClick={() => setShowUpdateModal(true)}
                 >
                   {loading ? "  Deleteing..." : "Delete"}
                 </Button>
               )}
+
+              {(rider.status === 'APPROVED' || rider.status === 'REJECTED') && (
+                <Button
+                  className="w-[160px] h-[39px] flex justify-center items-center bg-orange-600 hover:bg-orange-800"
+                  onClick={handleRevertToPending}
+                  disabled={loading}
+                >
+                  {loading ? "Reverting..." : "Set to Pending"}
+                </Button>
+
+              )}
+
+
             </div>
           </div>
         </div>
@@ -192,6 +243,7 @@ const RiderDetailsPage = () => {
               >
                 Delete
               </button>
+
             </div>
           </div>
         </div>

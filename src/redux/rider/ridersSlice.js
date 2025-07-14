@@ -1,4 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { updateRiderDetailsApi } from '../../services/rider';
+
 import {
   loadAllRider,
   getRiderById,
@@ -41,6 +43,21 @@ export const fetchPendingRiders = createAsyncThunk(
     }
   }
 );
+
+
+
+
+export const updateRiderDetails = createAsyncThunk(
+  'riders/updateRiderDetails',
+  async ({ riderId, data }, { rejectWithValue }) => {
+    try {
+      return await updateRiderDetailsApi(riderId, data);
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Error updating rider');
+    }
+  }
+);
+
 
 // 🔹 Rider Image
 export const fetchRiderImage = createAsyncThunk(
