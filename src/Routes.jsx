@@ -26,7 +26,7 @@ import ShowStatementPage from './pages/revenue/ShowStatement';
 import RiderDetailsPage from './pages/riders/details/RiderDetailsPage';
 import AllRiders from './pages/riders/view/AllRider';
 import UpdateRider from './pages/riders/view/UpdateRider';
-import Map from './pages/map/MapComponent';
+import MapComponent from './pages/map/MapComponent';
 
 const AppRoutes = () => {
   const [showSplash, setShowSplash] = useState(true);
@@ -72,7 +72,7 @@ const AppRoutes = () => {
               <Route path="prices/create" element={<PriceCreationPage />} />
               <Route path="prices/:id" element={<PriceDetailsPage />} />
               <Route path="prices/update/:id" element={<UpdatePricePage />} />
-              <Route path="maps" element={<Map />} />
+              <Route path="maps" element={<MapComponent/>} />
             </Route>
 
             {/* Riders, Managers can see */}
