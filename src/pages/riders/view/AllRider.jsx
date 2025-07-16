@@ -1,20 +1,20 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import ListTable from '../../../components/ui/BranchTable';
+import { fetchBranches } from '../../../redux/branchSlice';
 import {
-  selectRidersItems,
-  selectRidersStatus,
-  selectRiderImages,
   selectPendingRidersItems,
   selectPendingRidersStatus,
+  selectRiderImages,
+  selectRidersItems,
+  selectRidersStatus,
 } from '../../../redux/rider/riderSelectors';
 import {
-  fetchRiders,
-  fetchRiderImage,
   fetchPendingRiders,
+  fetchRiderImage,
+  fetchRiders,
 } from '../../../redux/rider/ridersSlice';
-import ListTable from '../../../components/ui/BranchTable';
 import RenderImage from './RiderImage';
-import { fetchBranches } from '../../../redux/branchSlice';
 
 const AllRiders = () => {
   const dispatch = useDispatch();

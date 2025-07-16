@@ -22,11 +22,11 @@ const RenderImage = ({ imageUrl }) => {
           Loading...
         </div>
       )}
-      <div className="h-20 w-15 flex items-center justify-center rounded-full">
+      <div className="h-20 w-15 flex items-center justify-center ">
         <img
           src={imageUrl}
           alt="Rider"
-          className="h-20 w-15  object-cover rounded-full"
+          className="h-20 w-15  object-cover"
           style={{ display: loading ? 'none' : 'block' }}
           onLoad={() => setLoading(false)}
           onError={(e) => {

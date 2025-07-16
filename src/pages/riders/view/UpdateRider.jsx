@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { fetchVehicles } from "../../../redux/vehicleSlice";
-import { updateRiderDetails } from "../../../redux/rider/ridersSlice";
+import { fetchRiderImage } from "../../../redux/rider/ridersSlice";
+import RenderImage from "./RiderImage";
 import {
   retrieveRiderDetailsApi,
   updateRiderDetailsApi,
@@ -11,10 +12,16 @@ import {
   uploadVehicleFileApi,
 } from "../../../services/rider";
 
+import {
+  selectRiderImages,
+} from '../../../redux/rider/riderSelectors';
+
 export default function UpdateRider() {
   const { id } = useParams();
   const dispatch = useDispatch();
   const vehiclesFromStore = useSelector((state) => state.vehicles.items || []);
+  const riderImages = useSelector(selectRiderImages);
+  const fetchedImagesRef = useRef(new Set());
 
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -23,13 +30,13 @@ export default function UpdateRider() {
   const [documents, setDocuments] = useState({});
   const [vehiclesFormData, setVehiclesFormData] = useState([]);
 
+  // Fetch rider details once id changes
   useEffect(() => {
     if (!id) return;
     (async () => {
       try {
         const res = await retrieveRiderDetailsApi(id);
         setUserId(res.user?.id || null);
-        console.log("Rider details loaded:", res);
         setRiderFormData({
           date_Of_Birth: res.date_Of_Birth || "",
           driver_License: res.driver_License || "",
@@ -43,45 +50,64 @@ export default function UpdateRider() {
           citizen_back: res.citizen_Back || null,
           nid: res.nid_Img || null,
         });
-        setLoading(false);
       } catch (err) {
         console.error("Failed to load rider", err);
+      } finally {
         setLoading(false);
       }
     })();
   }, [id]);
 
+  // Fetch vehicles after getting userId
   useEffect(() => {
     if (userId) dispatch(fetchVehicles(userId));
-  }, [userId]);
+  }, [userId, dispatch]);
 
+  // Prepare vehicles form data when vehicles update
   useEffect(() => {
     setVehiclesFormData(
       vehiclesFromStore.length
         ? vehiclesFromStore.map((v) => ({
-          vehicleType: v.vehicleType || "",
-          vehicleBrand: v.vehicleBrand || "",
-          vehicleNumber: v.vehicleNumber || "",
-          productionYear: v.productionYear?.split("T")[0] || "",
-          billBook1: null,
-          billBook2: null,
-          vehicleImg: null,
-          id: v.id || null,
-        }))
-        : [
-          {
-            vehicleType: "",
-            vehicleBrand: "",
-            vehicleNumber: "",
-            productionYear: "",
+            vehicleType: v.vehicleType || "",
+            vehicleBrand: v.vehicleBrand || "",
+            vehicleNumber: v.vehicleNumber || "",
+            productionYear: v.productionYear?.split("T")[0] || "",
             billBook1: null,
             billBook2: null,
             vehicleImg: null,
-            id: null,
-          },
-        ]
+            id: v.id || null,
+          }))
+        : [
+            {
+              vehicleType: "",
+              vehicleBrand: "",
+              vehicleNumber: "",
+              productionYear: "",
+              billBook1: null,
+              billBook2: null,
+              vehicleImg: null,
+              id: null,
+            },
+          ]
     );
   }, [vehiclesFromStore]);
+
+  // Fetch rider document images via Redux if not cached
+  useEffect(() => {
+    if (loading) return; // wait until rider data loaded
+
+    Object.values(documents).forEach((doc) => {
+      // Only fetch if doc is string (filename), not null and not already fetched
+      if (
+        typeof doc === "string" &&
+        !riderImages[doc] &&
+        !fetchedImagesRef.current.has(doc)
+      ) {
+        fetchedImagesRef.current.add(doc);
+        dispatch(fetchRiderImage(doc));
+      }
+    });
+  }, [documents, riderImages, dispatch, loading]);
 
   const handleChange = (setter) => (e) => {
     const { name, value, files } = e.target;
@@ -98,19 +124,15 @@ export default function UpdateRider() {
   const handleSubmit = async () => {
     setIsSubmitting(true);
     try {
-      // 1. Update rider details
       await updateRiderDetailsApi(id, riderFormData);
 
-      // 2. Upload rider documents
       for (const [fileType, file] of Object.entries(documents)) {
         if (file instanceof File) {
           await uploadRiderFileApi(id, file, fileType);
         }
       }
 
-      // 3. Update vehicles and upload vehicle files
       for (const vehicle of vehiclesFormData) {
-
         await updateVehicleDetailsApi(vehicle.id, {
           vehicleType: vehicle.vehicleType,
           vehicleBrand: vehicle.vehicleBrand,
@@ -163,9 +185,24 @@ export default function UpdateRider() {
         {["selfie", "license", "citizen_front", "citizen_back", "nid"].map((f) => (
           <div key={f} className="mb-4">
             <label className="block text-sm mb-1 capitalize">{f}</label>
-            <input type="file" name={f} onChange={handleChange(setDocuments)} className="border p-2 rounded w-full" />
-            {documents[f] && typeof documents[f] === "string" && (
-              <p className="text-xs text-gray-500 mt-1">Current: {documents[f]}</p>
+            <input
+              type="file"
+              name={f}
+              onChange={handleChange(setDocuments)}
+              className="border p-2  w-full"
+            />
+            {documents[f] && (
+              <div className="mt-2 ">
+                {typeof documents[f] === "string" ? (
+                  <RenderImage imageUrl={riderImages[documents[f]]} />
+                ) : (
+                  <img
+                    src={URL.createObjectURL(documents[f])}
+                    alt={`${f} preview`}
+                    className="h-36 w-36 object-cover rounded-md"
+                  />
+                )}
+              </div>
             )}
           </div>
         ))}
@@ -175,7 +212,10 @@ export default function UpdateRider() {
       <div className="bg-white p-6 border rounded shadow-md">
         <h2 className="text-xl font-semibold mb-4">Vehicle Info</h2>
         {vehiclesFormData.map((v, i) => (
-          <div key={i} className="grid grid-cols-2 gap-4 mb-6 bg-gray-50 p-4 rounded border">
+          <div
+            key={i}
+            className="grid grid-cols-2 gap-4 mb-6 bg-gray-50 p-4 rounded border"
+          >
             {["vehicleType", "vehicleBrand", "vehicleNumber"].map((f) => (
               <div key={f}>
                 <label className="block text-sm mb-1 capitalize">{f}</label>
@@ -199,7 +239,6 @@ export default function UpdateRider() {
               />
             </div>
 
-          
             {["billBook1", "billBook2", "vehicleImg"].map((f) => (
               <div key={f}>
                 <label className="block text-sm mb-1 capitalize">{f}</label>
