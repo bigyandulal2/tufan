@@ -192,7 +192,7 @@ export default function UpdateRider() {
               className="border p-2  w-full"
             />
             {documents[f] && (
-              <div className="mt-2 ">
+              <div className="mt-2 flex items-center space-x-2">
                 {typeof documents[f] === "string" ? (
                   <RenderImage imageUrl={riderImages[documents[f]]} />
                 ) : (
