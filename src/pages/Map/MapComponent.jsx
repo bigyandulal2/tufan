@@ -1,10 +1,10 @@
-import { GoogleMap, useJsApiLoader, Marker, Polyline, InfoWindow } from "@react-google-maps/api";
-import { useContext, useEffect, useState, useRef } from "react";
+import { GoogleMap, InfoWindow, Marker, Polyline, useJsApiLoader } from "@react-google-maps/api";
+import { useContext, useEffect, useRef, useState } from "react";
 import Bike from "../../assets/Bike.svg";
 import Car from '../../assets/car.png';
 import { contextData } from '../../context/Context';
-const libraries = ["geometry"];
 import FetchData from "../../services/MapAPI";
+const libraries = ["geometry"];
 
 export default function MapComponent() {
 
@@ -57,7 +57,7 @@ export default function MapComponent() {
 
   // Load Google Maps JS API
   const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: "AIzaSyAmhPPLqzBFkyrkmaimjjKnFFLRd2SqzZI",
+    googleMapsApiKey: "AIzaSyAXs9F40dZwRZVioQJiXw4S82ZQ5dWFaXw",
     libraries: libraries,
   });
 
