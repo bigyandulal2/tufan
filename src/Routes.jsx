@@ -26,7 +26,7 @@ import ShowStatementPage from './pages/revenue/ShowStatement';
 import RiderDetailsPage from './pages/riders/details/RiderDetailsPage';
 import AllRiders from './pages/riders/view/AllRider';
 import UpdateRider from './pages/riders/view/UpdateRider';
-import MapComponent from './pages/map/MapComponent';
+import MapComponent from './pages/map/MapComponent.jsx';
 
 const AppRoutes = () => {
   const [showSplash, setShowSplash] = useState(true);
