@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@dhiwise/component-tagger": "^1.0.6",
+    "@react-google-maps/api": "^2.20.7",
     "@reduxjs/toolkit": "^2.8.2",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
@@ -64,8 +65,6 @@
     "appId": "com.tufan.desktopapp",
     "productName": "TufanApp",
     "publish": null,
-
-   
     "files": [
       "dist/**/*",
       "electron/**/*",

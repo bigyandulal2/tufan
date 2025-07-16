@@ -63,7 +63,6 @@ export default function UpdateRider() {
           vehicleBrand: v.vehicleBrand || "",
           vehicleNumber: v.vehicleNumber || "",
           productionYear: v.productionYear?.split("T")[0] || "",
-          categoryId: v.category?.categoryId || "",
           billBook1: null,
           billBook2: null,
           vehicleImg: null,
@@ -75,7 +74,6 @@ export default function UpdateRider() {
             vehicleBrand: "",
             vehicleNumber: "",
             productionYear: "",
-            categoryId: "",
             billBook1: null,
             billBook2: null,
             vehicleImg: null,
@@ -118,7 +116,6 @@ export default function UpdateRider() {
           vehicleBrand: vehicle.vehicleBrand,
           vehicleNumber: vehicle.vehicleNumber,
           productionYear: vehicle.productionYear,
-          category: { categoryId: Number(vehicle.categoryId) },
         });
 
         for (const key of ["billBook1", "billBook2", "vehicleImg"]) {
@@ -202,17 +199,7 @@ export default function UpdateRider() {
               />
             </div>
 
-            <div>
-              <label className="block text-sm mb-1">Category ID</label>
-              <input
-                type="number"
-                name="categoryId"
-                value={v.categoryId}
-                onChange={(e) => handleVehicleChange(i, e)}
-                className="border p-2 rounded w-full"
-              />
-            </div>
-
+          
             {["billBook1", "billBook2", "vehicleImg"].map((f) => (
               <div key={f}>
                 <label className="block text-sm mb-1 capitalize">{f}</label>

@@ -23,6 +23,7 @@ const Sidebar = () => {
     { name: 'Blogs', icon: plusIcon, path: '/admin/blogs' },
     { name: 'Theme', icon: plusIcon, path: '/admin/theme' },
     { name: 'Language', icon: plusIcon, path: '/admin/language' },
+    { name: 'Map', icon: plusIcon, path: '/admin/maps' },
   ];
 
   // ✅ Filter out hidden menu based on user roles

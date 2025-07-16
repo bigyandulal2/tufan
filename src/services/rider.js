@@ -165,6 +165,7 @@ export const uploadVehicleFileApi = async (vehicleId, file, type) => {
   );
 };
 
+
 // ✅ Revert rider status to pending
 export const RevertRiderStatusApi = async (id) => {
   return handleRequest(() => privateAxios.put(`/${id}/makepending`), {

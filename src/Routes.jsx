@@ -1,30 +1,31 @@
-import React, { useEffect, useState } from 'react';
-import { HashRouter as Router, Routes, Route } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Route, HashRouter as Router, Routes } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 
 // Pages
 import LoginPage from './pages/auth/Authindexs';
 import BranchCreationPage from './pages/Branch/Create';
-import AllBranches from './pages/Branch/view/Allbranch';
 import BranchDetailsPage from './pages/Branch/details/BranchDetailsPage';
 import UpdateBranchPage from './pages/Branch/update/UpdateBranch';
+import AllBranches from './pages/Branch/view/Allbranch';
 // Components
 import Privateroute from './components/common/Privateroute';
-import AdminLayout from './pages';
-import AllManagers from './pages/manager/view/AllManager';
-import ManagerCreationPage from './pages/manager/create/ManagerCreationPage';
-import ShowStatementPage from './pages/revenue/ShowStatement';
-import AllRiders from './pages/riders/view/AllRider';
-import RiderDetailsPage from './pages/riders/details/RiderDetailsPage';
-import UpdateManagerPage from './pages/manager/update/UpdateManagerPage';
-import ManagerDetailsPage from './pages/manager/details/ManagerDetailsPage';
+import SplashScreen from './components/common/SplashScreen';
 import { ROLE_MANAGER } from './constant/role';
+import AdminLayout from './pages';
 import UnderDevelopment from './pages/future/UnderDevelopment';
+import ManagerCreationPage from './pages/manager/create/ManagerCreationPage';
+import ManagerDetailsPage from './pages/manager/details/ManagerDetailsPage';
+import UpdateManagerPage from './pages/manager/update/UpdateManagerPage';
+import AllManagers from './pages/manager/view/AllManager';
+import MapComponent from './pages/map/MapComponent';
 import AllPrice from './pages/price/AllPrice';
 import PriceCreationPage from './pages/price/create/PriceCreationPage';
-import UpdatePricePage from './pages/price/update/UpdatePricePage';
 import PriceDetailsPage from './pages/price/details/PriceDetailsPage';
-import SplashScreen from './components/common/SplashScreen';
+import UpdatePricePage from './pages/price/update/UpdatePricePage';
+import ShowStatementPage from './pages/revenue/ShowStatement';
+import RiderDetailsPage from './pages/riders/details/RiderDetailsPage';
+import AllRiders from './pages/riders/view/AllRider';
 import UpdateRider from './pages/riders/view/UpdateRider';
 
 const AppRoutes = () => {
@@ -71,6 +72,7 @@ const AppRoutes = () => {
               <Route path="prices/create" element={<PriceCreationPage />} />
               <Route path="prices/:id" element={<PriceDetailsPage />} />
               <Route path="prices/update/:id" element={<UpdatePricePage />} />
+              <Route path="maps" element={<MapComponent />} />
             </Route>
 
             {/* Riders, Managers can see */}
