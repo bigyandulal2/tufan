@@ -1,16 +1,16 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { fetchVehicles } from "../../../redux/vehicleSlice";
 import { fetchRiderImage } from "../../../redux/rider/ridersSlice";
-import RenderImage from "./RiderImage";
+import { fetchVehicles } from "../../../redux/vehicleSlice";
 import {
   retrieveRiderDetailsApi,
   updateRiderDetailsApi,
-  uploadRiderFileApi,
   updateVehicleDetailsApi,
+  uploadRiderFileApi,
   uploadVehicleFileApi,
 } from "../../../services/rider";
+import RenderImage from "./RiderImage";
 
 import {
   selectRiderImages,
@@ -68,36 +68,35 @@ export default function UpdateRider() {
     setVehiclesFormData(
       vehiclesFromStore.length
         ? vehiclesFromStore.map((v) => ({
-            vehicleType: v.vehicleType || "",
-            vehicleBrand: v.vehicleBrand || "",
-            vehicleNumber: v.vehicleNumber || "",
-            productionYear: v.productionYear?.split("T")[0] || "",
+          vehicleType: v.vehicleType || "",
+          vehicleBrand: v.vehicleBrand || "",
+          vehicleNumber: v.vehicleNumber || "",
+          productionYear: v.productionYear?.split("T")[0] || "",
+          billBook1: null,
+          billBook2: null,
+          vehicleImg: null,
+          id: v.id || null,
+        }))
+        : [
+          {
+            vehicleType: "",
+            vehicleBrand: "",
+            vehicleNumber: "",
+            productionYear: "",
             billBook1: null,
             billBook2: null,
             vehicleImg: null,
-            id: v.id || null,
-          }))
-        : [
-            {
-              vehicleType: "",
-              vehicleBrand: "",
-              vehicleNumber: "",
-              productionYear: "",
-              billBook1: null,
-              billBook2: null,
-              vehicleImg: null,
-              id: null,
-            },
-          ]
+            id: null,
+          },
+        ]
     );
   }, [vehiclesFromStore]);
 
-  // Fetch rider document images via Redux if not cached
+  // Fetch rider document images 
   useEffect(() => {
-    if (loading) return; // wait until rider data loaded
+    if (loading) return;
 
     Object.values(documents).forEach((doc) => {
-      // Only fetch if doc is string (filename), not null and not already fetched
       if (
         typeof doc === "string" &&
         !riderImages[doc] &&
@@ -123,38 +122,63 @@ export default function UpdateRider() {
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
-    try {
-      await updateRiderDetailsApi(id, riderFormData);
 
+    // Collect errors here
+    const errors = [];
+
+    try {
+      // Update rider details
+      await updateRiderDetailsApi(id, riderFormData).catch((e) => {
+        errors.push("Failed to update rider details.");
+        console.error(e);
+      });
+
+      // Upload rider documents
       for (const [fileType, file] of Object.entries(documents)) {
         if (file instanceof File) {
-          await uploadRiderFileApi(id, file, fileType);
+          await uploadRiderFileApi(id, file, fileType).catch((e) => {
+            errors.push(`Failed to upload rider document: ${fileType}`);
+            console.error(e);
+          });
         }
       }
 
+      // Update vehicles and upload vehicle files
       for (const vehicle of vehiclesFormData) {
         await updateVehicleDetailsApi(vehicle.id, {
           vehicleType: vehicle.vehicleType,
           vehicleBrand: vehicle.vehicleBrand,
           vehicleNumber: vehicle.vehicleNumber,
           productionYear: vehicle.productionYear,
+        }).catch((e) => {
+          errors.push(`Failed to update vehicle with id ${vehicle.id}`);
+          console.error(e);
         });
 
         for (const key of ["billBook1", "billBook2", "vehicleImg"]) {
           if (vehicle[key] instanceof File) {
-            await uploadVehicleFileApi(vehicle.id, vehicle[key], key);
+            await uploadVehicleFileApi(vehicle.id, vehicle[key], key).catch((e) => {
+              errors.push(`Failed to upload ${key}`);
+              console.error(e);
+            });
           }
         }
       }
 
-      alert("Rider and vehicles updated successfully.");
+      if (errors.length > 0) {
+        alert("Some errors occurred:\n" + errors.join("\n"));
+      } else {
+      
+      }
     } catch (error) {
-      console.error("Update failed:", error);
-      alert("Failed to update rider or vehicles.");
+
+      alert("An unexpected error occurred.");
+      console.error(error);
     } finally {
       setIsSubmitting(false);
     }
   };
+
 
   if (loading) return <div>Loading...</div>;
 

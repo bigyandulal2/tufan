@@ -18,9 +18,15 @@ import RenderImage from './RiderImage';
 
 const AllRiders = () => {
   const dispatch = useDispatch();
+
+  // State for managing active tab and pagination
   const [activeTab, setActiveTab] = useState('All');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
   const fetchedImagesRef = useRef(new Set());
 
+  // Redux selectors
   const riders = useSelector(selectRidersItems);
   const pendingRiders = useSelector(selectPendingRidersItems);
   const riderImages = useSelector(selectRiderImages);
@@ -32,22 +38,26 @@ const AllRiders = () => {
   const dataToDisplay = isPendingTab ? pendingRiders : riders;
   const dataStatus = isPendingTab ? pendingStatus : ridersStatus;
 
+  //Reset page to 1
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeTab]);
 
-
+  // Fetch all branches
   useEffect(() => {
     dispatch(fetchBranches());
   }, [dispatch]);
 
-  // Fetch riders based on active tab
+  // Fetch riders based on the active tab
   useEffect(() => {
     if (isPendingTab) {
       dispatch(fetchPendingRiders());
     } else {
       dispatch(fetchRiders());
     }
-  }, [dispatch, activeTab, isPendingTab]);
+  }, [dispatch, isPendingTab]);
 
-  // Fetch rider images if not already loaded
+  // Fetch rider images if not already available
   useEffect(() => {
     if (dataStatus !== 'succeeded') return;
 
@@ -67,13 +77,7 @@ const AllRiders = () => {
       const imgName = rider?.user?.imageName;
       const imageUrl = riderImages[imgName];
       const riderBranchId = rider?.user?.branchId;
-      console.log('Branch ID:',);
-      console.log('Branch :',);
 
-
-
-
-      // Get branch name using branchId
       const branch = branches.find((b) => String(b.id) === String(riderBranchId));
       const branchName = branch?.name || 'N/A';
 
@@ -89,7 +93,15 @@ const AllRiders = () => {
     });
   }, [dataToDisplay, riderImages, branches]);
 
-  // Tab button labels
+  // New: Pagination logic
+  const totalPages = Math.ceil(formattedData.length / itemsPerPage);
+
+  const paginatedData = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return formattedData.slice(start, start + itemsPerPage);
+  }, [formattedData, currentPage]);
+
+  // Buttons
   const tabButtons = useMemo(
     () => [
       { label: `All (${riders.length})`, value: 'All' },
@@ -105,8 +117,9 @@ const AllRiders = () => {
           Riders List
         </h1>
 
+        {/* Table for displaying riders */}
         <ListTable
-          data={formattedData}
+          data={paginatedData}
           headers={['ID', 'Name', 'Image', 'Category', 'Branch Name', 'Balance', 'Status']}
           rowDataKeys={['id', 'name', 'image', 'category', 'BranchName', 'balance', 'status']}
           module="riders"
@@ -115,6 +128,37 @@ const AllRiders = () => {
           activeTab={activeTab}
           setActiveTab={setActiveTab}
         />
+
+        {/* rider list  */}
+        <div className="flex justify-center items-center gap-2 mt-4">
+          <button
+            onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+            disabled={currentPage === 1}
+            className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+          >
+            Prev
+          </button>
+
+          {Array.from({ length: totalPages }, (_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrentPage(i + 1)}
+              className={`px-3 py-1 rounded ${
+                currentPage === i + 1 ? 'bg-blue-500 text-white' : 'bg-gray-200'
+              }`}
+            >
+              {i + 1}
+            </button>
+          ))}
+
+          <button
+            onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+            disabled={currentPage === totalPages}
+            className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
       </div>
     </div>
   );
