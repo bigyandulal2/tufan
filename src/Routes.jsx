@@ -27,6 +27,7 @@ import RiderDetailsPage from './pages/riders/details/RiderDetailsPage';
 import AllRiders from './pages/riders/view/AllRider';
 import UpdateRider from './pages/riders/view/UpdateRider';
 import MapComponent from '../src/pages/Map/MapComponent.jsx';
+import UsersList from './pages/users/view/Userlist.jsx';
 
 const AppRoutes = () => {
   const [showSplash, setShowSplash] = useState(true);
@@ -50,7 +51,7 @@ const AppRoutes = () => {
         <Route path="/admin" element={<Privateroute />}>
           <Route element={<AdminLayout />}>
 
-            <Route path="users" element={<UnderDevelopment />} />
+            <Route path="users" element={<UsersList />} />
             <Route path="blogs" element={<UnderDevelopment />} />
             <Route path="theme" element={<UnderDevelopment />} />
             <Route path="language" element={<UnderDevelopment />} />
