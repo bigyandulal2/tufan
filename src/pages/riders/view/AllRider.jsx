@@ -101,21 +101,42 @@ const AllRiders = () => {
     return formattedData.slice(start, start + itemsPerPage);
   }, [formattedData, currentPage]);
 
+  const carRiderCount = riders.filter(
+    rider => rider.category?.categoryTitle?.toLowerCase() === "car"
+  ).length;
+
+  const bikeRiderCount = riders.filter(
+    rider => rider.category?.categoryTitle?.toLowerCase() === "bike"
+  ).length;
+
+
   // Buttons
   const tabButtons = useMemo(
     () => [
+
       { label: `All (${riders.length})`, value: 'All' },
       { label: `Pending (${pendingRiders.length})`, value: 'Pending' },
     ],
     [riders.length, pendingRiders.length]
   );
 
+  console.log('Riders:', riders);
+
   return (
+
     <div className="flex-1">
       <div className="border border-black rounded-[10px] p-6 min-h-[736px]">
         <h1 className="text-[20px] font-bold text-black text-center mb-6">
           Riders List
         </h1>
+        <div className='flex justify-start items-center gap-x-4 '>
+          <p className='text-[16px] font-semibold text-black' >
+            Car: {carRiderCount}
+          </p>
+          <p className='text-[16px] font-semibold text-black' >
+            Bike: {bikeRiderCount}
+          </p>
+        </div>
 
         {/* Table for displaying riders */}
         <ListTable
@@ -127,6 +148,7 @@ const AllRiders = () => {
           buttons={tabButtons}
           activeTab={activeTab}
           setActiveTab={setActiveTab}
+
         />
 
         {/* rider list  */}
@@ -139,17 +161,44 @@ const AllRiders = () => {
             Prev
           </button>
 
-          {Array.from({ length: totalPages }, (_, i) => (
-            <button
-              key={i}
-              onClick={() => setCurrentPage(i + 1)}
-              className={`px-3 py-1 rounded ${
-                currentPage === i + 1 ? 'bg-blue-500 text-white' : 'bg-gray-200'
-              }`}
-            >
-              {i + 1}
-            </button>
-          ))}
+          {/* First page */}
+          {currentPage > 2 && (
+            <>
+              <button
+                onClick={() => setCurrentPage(1)}
+                className={`px-3 py-1 rounded ${currentPage === 1 ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+              >
+                1
+              </button>
+              {currentPage > 3 && <span className="px-2">...</span>}
+            </>
+          )}
+
+          {/* Pages around current */}
+          {Array.from({ length: totalPages }, (_, i) => i + 1)
+            .filter((page) => Math.abs(currentPage - page) <= 1)
+            .map((page) => (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={`px-3 py-1 rounded ${currentPage === page ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+              >
+                {page}
+              </button>
+            ))}
+
+          {/* Last page */}
+          {currentPage < totalPages - 1 && (
+            <>
+              {currentPage < totalPages - 2 && <span className="px-2">...</span>}
+              <button
+                onClick={() => setCurrentPage(totalPages)}
+                className={`px-3 py-1 rounded ${currentPage === totalPages ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+              >
+                {totalPages}
+              </button>
+            </>
+          )}
 
           <button
             onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
@@ -159,6 +208,8 @@ const AllRiders = () => {
             Next
           </button>
         </div>
+
+
       </div>
     </div>
   );
