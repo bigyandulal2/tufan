@@ -4,9 +4,12 @@ import Bike from "../../assets/Bike.svg";
 import Car from '../../assets/car.png';
 import { contextData } from '../../context/Context';
 import FetchData from "../../services/MapAPI";
+import { loadAllUsers } from "../../services/userlist";
+import { useSelector } from "react-redux";
 const libraries = ["geometry"];
 
 export default function MapComponent() {
+
 
 
   //province
@@ -20,9 +23,30 @@ export default function MapComponent() {
     "Sudurpashchim Province"
   ];
 
+  // mapping provinces 
+  const provinceBranchMap = {
+    "Koshi Province": 4,
+    "Madhesh Province": 378,
+    "Bagamati Province": 5,
+    "Gandaki Province": 1,
+    "Lumbini Province": 3,
+    "Karnali Province": 6,
+    "Sudurpashchim Province": 7,
+  };
+
+
   //Access Data from Api using contextapi
-  const { selectedProvince, setSelectedProvince,apidata } = useContext(contextData)
-  
+  const { selectedProvince, setSelectedProvince, apidata } = useContext(contextData)
+
+  //Stores Users
+  const [users, setUsers] = useState([]);
+
+  //Stores Rider Count 
+  const [riderCount, setRiderCount] = useState(0);
+
+
+  // stores Pessenger Count
+  const [passengerCount, setPassengerCount] = useState(0);
 
 
 
@@ -91,7 +115,43 @@ export default function MapComponent() {
     initialCenterDone.current = false;
   }, [selectedProvince]);
 
-  // Initial center (fast, on first load)
+  //Fetch User Info
+  useEffect(() => {
+    const fetchUsersList = async () => {
+      try {
+        const data = await loadAllUsers();
+        setUsers(data);
+        console.log("Loaded users:", data);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+
+    fetchUsersList();
+  }, []);
+
+  // Count Riders and Passengers
+  useEffect(() => {
+    if (users.length > 0 && selectedProvince) {
+      const selectedBranchId = provinceBranchMap[selectedProvince];
+
+      const filteredUsers = users.filter(
+        (user) => user.branchId === selectedBranchId
+      );
+
+      const riders = filteredUsers.filter(user => user.modes === "RIDER").length;
+      const passengers = filteredUsers.filter(user => user.modes === "PESSENGER").length;
+
+      setRiderCount(riders);
+      setPassengerCount(passengers);
+    } else {
+      setRiderCount(0);
+      setPassengerCount(0);
+    }
+  }, [users, selectedProvince]);
+
+
+  // Initial center of the map
   useEffect(() => {
     if (!initialCenterDone.current && selectedRiderId === null && apidata.length > 0 && mapRef) {
       const delay = selectedProvince ? 500 : 0;
@@ -163,13 +223,13 @@ export default function MapComponent() {
   if (!isLoaded) return <div>Loading Map...</div>;
 
   return (
-    
+
 
     <div className="border border-gray-300 rounded-xl shadow-md overflow-hidden bg-white">
 
-  <FetchData/>
+      <FetchData />
       {/* Project Name */}
-     <header className="text-black p-4 font-semibold text-2xl flex justify-center items-center shadow-md z-50">
+      <header className="text-black p-4 font-semibold gap-x-5 text-2xl flex justify-center items-center shadow-md z-50">
         <h1>
           Live Vehicles Tracker
         </h1>
@@ -188,7 +248,7 @@ export default function MapComponent() {
             id="province-select"
             value={selectedProvince}
             onChange={(e) => setSelectedProvince(e.target.value)}
-           className="border border-gray-300 rounded-md px-2 py-1 text-md font-light"
+            className="border border-gray-300 rounded-md px-2 py-1 text-md font-light"
 
 
           >
@@ -200,6 +260,14 @@ export default function MapComponent() {
           </select>
         </div>
 
+        <div className="flex flex-col items-baseline space-x-4">
+          <p className="text-black font-semibold">
+            Riders: <span className="font-bold">{riderCount}</span>
+          </p>
+          <p className="text-black font-semibold">
+            Passengers: <span className="font-bold">{passengerCount}</span>
+          </p>
+        </div>
 
         {/* Search Input */}
         <div className="flex items-center space-x-2 flex-grow max-w-md ">
