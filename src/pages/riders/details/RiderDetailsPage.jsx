@@ -160,7 +160,7 @@ const RiderDetailsPage = () => {
 
 
 
-              {(rider.status === 'APPROVED' || rider.status === 'REJECTED') && (
+              {(rider.status === 'APPROVED' || rider.status === 'REJECTED' || rider.status === 'PENDING' ) && (
                 <Button
                   className="w-[120px] h-[39px] flex justify-center items-center bg-red-600 hover:bg-red-800"
                   onClick={() => setShowUpdateModal(true)}
