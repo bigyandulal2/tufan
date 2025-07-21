@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {changeRoleToRider,  loadAllUsers } from "../../../services/userlist";
+import {loadAllUsers } from "../../../services/userlist";
 
 function UsersList() {
   const [users, setUsers] = useState([]);

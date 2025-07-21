@@ -1,136 +1,160 @@
 import { useState } from "react";
-import axios from "axios";
+import { useParams } from "react-router-dom";
+import { createRider, createVehicle } from "../../../services/userlist";
 
-function UpdateToRider({ userId }) {
-  const [formData, setFormData] = useState({
-    vehicleType: "",
-    vehicleBrand: "",
-    vehicleNumber: "",
-    productionYear: "",
-    categoryId: 1,
-  });
+function ChangeRoleToRider() {
+    const { id } = useParams(); 
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+    const [vehicleData, setVehicleData] = useState({
+        vehicleType: "",
+        vehicleBrand: "",
+        vehicleNumber: "",
+        productionYear: "",
+        categoryId: "1",
+    });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const payload = {
-        vehicleType: formData.vehicleType,
-        vehicleBrand: formData.vehicleBrand,
-        vehicleNumber: formData.vehicleNumber,
-        productionYear: formData.productionYear,
-        category: {
-          categoryId: parseInt(formData.categoryId)
+    const [riderData, setRiderData] = useState({
+        driver_License: "",
+        date_Of_Birth: "",
+        nid_No: "",
+        citizen_No: "",
+    });
+
+    const handleChange = (e, setState) => {
+        const { name, value } = e.target;
+        setState((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const vehiclePayload = {
+                vehicleType: vehicleData.vehicleType,
+                vehicleBrand: vehicleData.vehicleBrand,
+                vehicleNumber: vehicleData.vehicleNumber,
+                productionYear: vehicleData.productionYear,
+                category: {
+                    categoryId: parseInt(vehicleData.categoryId),
+                },
+            };
+
+            await createVehicle(id, vehicleData.categoryId, vehiclePayload);
+
+            const riderPayload = {
+                driver_License: riderData.driver_License,
+                date_Of_Birth: riderData.date_Of_Birth,
+                nid_No: riderData.nid_No,
+                citizen_No: riderData.citizen_No,
+            };
+
+            await createRider(id, vehicleData.categoryId, riderPayload);
+
+            alert("Rider and Vehicle created successfully!");
+        } catch (err) {
+            console.error("Error:", err.response?.data || err.message);
+            alert("Something went wrong!");
         }
-      };
+    };
 
-      const confirmChange = window.confirm("Are you sure you want to change this user's role to Rider?");
-      if (!confirmChange) return;
+    return (
+        <form
+            onSubmit={handleSubmit}
+            className="p-6 max-w-xl mx-auto bg-white rounded shadow"
+        >
+            <h2 className="text-xl font-bold mb-4">Vehicle Information</h2>
 
-      try {
-        const response = await changeRoleToRider(userId);
-        alert("User role changed to Rider successfully!");
-      } catch (error) {
-        if (error.response) {
-          console.error("Detailed error:", error.response.data);
-          alert(
-            error.response.data.message ||
-            error.response.data.error ||
-            "Request failed: Bad data or missing fields."
-          );
-        } else {
-          console.error("Unknown error:", error);
-          alert("Something went wrong. Please try again.");
-        }
-      }
+            <input
+                type="text"
+                name="vehicleType"
+                placeholder="Vehicle Type"
+                value={vehicleData.vehicleType}
+                onChange={(e) => handleChange(e, setVehicleData)}
+                className="w-full border p-2 mb-3"
+                required
+            />
+            <input
+                type="text"
+                name="vehicleBrand"
+                placeholder="Vehicle Brand"
+                value={vehicleData.vehicleBrand}
+                onChange={(e) => handleChange(e, setVehicleData)}
+                className="w-full border p-2 mb-3"
+                required
+            />
+            <input
+                type="text"
+                name="vehicleNumber"
+                placeholder="Vehicle Number"
+                value={vehicleData.vehicleNumber}
+                onChange={(e) => handleChange(e, setVehicleData)}
+                className="w-full border p-2 mb-3"
+                required
+            />
+            <input
+                type="text"
+                name="productionYear"
+                placeholder="Production Year"
+                value={vehicleData.productionYear}
+                onChange={(e) => handleChange(e, setVehicleData)}
+                className="w-full border p-2 mb-3"
+                required
+            />
+            <input
+                type="number"
+                name="categoryId"
+                placeholder="Category ID"
+                value={vehicleData.categoryId}
+                onChange={(e) => handleChange(e, setVehicleData)}
+                className="w-full border p-2 mb-4"
+                required
+            />
 
-      alert("Rider successfully registered!");
-      console.log("Response:", response.data);
-    } catch (error) {
-      console.error("Error submitting form:", error.response?.data || error.message);
-      alert("Failed to register rider. Please check inputs.");
-    }
-  };
+            <h2 className="text-xl font-bold mb-4">Rider Information</h2>
 
-  return (
-    <form onSubmit={handleSubmit} className="p-4 max-w-md mx-auto bg-white rounded-lg shadow">
-      <h2 className="text-xl font-semibold mb-4">Register Rider Vehicle</h2>
+            <input
+                type="text"
+                name="driver_License"
+                placeholder="Driver License"
+                value={riderData.driver_License}
+                onChange={(e) => handleChange(e, setRiderData)}
+                className="w-full border p-2 mb-3"
+                required
+            />
+            <input
+                type="date"
+                name="date_Of_Birth"
+                value={riderData.date_Of_Birth}
+                onChange={(e) => handleChange(e, setRiderData)}
+                className="w-full border p-2 mb-3"
+                required
+            />
+            <input
+                type="text"
+                name="nid_No"
+                placeholder="NID Number"
+                value={riderData.nid_No}
+                onChange={(e) => handleChange(e, setRiderData)}
+                className="w-full border p-2 mb-3"
+                required
+            />
+            <input
+                type="text"
+                name="citizen_No"
+                placeholder="Citizenship No"
+                value={riderData.citizen_No}
+                onChange={(e) => handleChange(e, setRiderData)}
+                className="w-full border p-2 mb-4"
+                required
+            />
 
-      <label className="block mb-2">
-        Vehicle Type:
-        <input
-          type="text"
-          name="vehicleType"
-          value={formData.vehicleType}
-          onChange={handleChange}
-          className="w-full border p-2 rounded mt-1"
-          required
-        />
-      </label>
-
-      <label className="block mb-2">
-        Vehicle Brand:
-        <input
-          type="text"
-          name="vehicleBrand"
-          value={formData.vehicleBrand}
-          onChange={handleChange}
-          className="w-full border p-2 rounded mt-1"
-          required
-        />
-      </label>
-
-      <label className="block mb-2">
-        Vehicle Number:
-        <input
-          type="text"
-          name="vehicleNumber"
-          value={formData.vehicleNumber}
-          onChange={handleChange}
-          className="w-full border p-2 rounded mt-1"
-          required
-        />
-      </label>
-
-      <label className="block mb-2">
-        Production Year:
-        <input
-          type="number"
-          name="productionYear"
-          value={formData.productionYear}
-          onChange={handleChange}
-          className="w-full border p-2 rounded mt-1"
-          required
-        />
-      </label>
-
-      <label className="block mb-4">
-        Category ID:
-        <input
-          type="number"
-          name="categoryId"
-          value={formData.categoryId}
-          onChange={handleChange}
-          className="w-full border p-2 rounded mt-1"
-          required
-        />
-      </label>
-
-      <button
-        type="submit"
-        className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-      >
-        Submit
-      </button>
-    </form>
-  );
+            <button
+                type="submit"
+                className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+            >
+                Submit
+            </button>
+        </form>
+    );
 }
 
-export default UpdateToRider;
+export default ChangeRoleToRider;

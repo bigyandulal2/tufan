@@ -2,7 +2,7 @@ import { handleRequest } from "./apiClient";
 import { privateAxios } from "./helper";
 
 // ✅ Load all users 
-export  const loadAllUsers = async () => {
+export const loadAllUsers = async () => {
   return handleRequest(
     () => privateAxios.get("/users/"),
     {
@@ -12,14 +12,26 @@ export  const loadAllUsers = async () => {
   );
 };
 
-
-// change role to rider
-export const changeRoleToRider = async (userId) => {
+// ✅ Create Vehicle
+export const createVehicle = async (userId, categoryId, payload) => {
   return handleRequest(
-    () => privateAxios.post(`user/${userId}/category/1/riders`),
+    () => privateAxios.post(`/vehicles/user/${userId}/category/${categoryId}`, payload),
     {
-      onSuccessMessage: "User role changed to rider successfully.",
-      onErrorMessage: "Failed to change user role.",
+      onSuccessMessage: "Vehicle created successfully.",
+      onErrorMessage: "Failed to create vehicle.",
     }
   );
-}
+};
+
+
+// ✅ Create Rider (Change role to rider)
+export const createRider = async (userId, categoryId, payload) => {
+  return handleRequest(
+    () => privateAxios.post(`/user/${userId}/category/${categoryId}/riders`, payload),
+    {
+      onSuccessMessage: "Rider created successfully.",
+      onErrorMessage: "Failed to create rider.",
+    }
+  );
+};
+
