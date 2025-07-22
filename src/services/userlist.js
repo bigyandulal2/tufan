@@ -35,3 +35,24 @@ export const createRider = async (userId, categoryId, payload) => {
   );
 };
 
+// ✅ Load user by id 
+export const loadUserById = async (id) => {
+  return handleRequest(
+    () => privateAxios.get(`/users/${id}`),
+    {
+      onSuccessMessage: "User details retrieved successfully.",
+      onErrorMessage: "Failed to retrieve user details.",
+    }
+  );
+};
+
+export const getRiderVehicleData = async (id) => {
+  return handleRequest(
+    () => privateAxios.get(`/users/${id}/rider-vehicle`),
+    {
+      onSuccessMessage: "Missing check completed successfully.",
+      onErrorMessage: "Failed to check missing status.",
+    }
+  );
+}
+
