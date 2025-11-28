@@ -31,6 +31,7 @@ import AddRiderdata from './pages/users/view/AddRiderForm.jsx';
 import AddVehichledata from './pages/users/view/AddVehicle.jsx';
 import UsersList from './pages/users/view/Userlist.jsx';
 import Userdetails from './pages/users/details/userdetails.jsx';
+import Announcement from './pages/Announcement/Announcement.jsx';
 
 const AppRoutes = () => {
   const [showSplash, setShowSplash] = useState(true);
@@ -54,7 +55,7 @@ const AppRoutes = () => {
         <Route path="/admin" element={<Privateroute />}>
           <Route element={<AdminLayout />}>
 
-            
+
             <Route path="blogs" element={<UnderDevelopment />} />
             <Route path="theme" element={<UnderDevelopment />} />
             <Route path="language" element={<UnderDevelopment />} />
@@ -76,27 +77,19 @@ const AppRoutes = () => {
               <Route path="prices/create" element={<PriceCreationPage />} />
               <Route path="prices/:id" element={<PriceDetailsPage />} />
               <Route path="prices/update/:id" element={<UpdatePricePage />} />
-              <Route path="maps" element={<MapComponent/>} />
+              <Route path="maps" element={<MapComponent />} />
+              <Route path='announcement' element={<Announcement />} />
             </Route>
 
             {/* Riders, Managers can see */}
             <Route path="revenue" element={<ShowStatementPage />} />
             <Route path="riders" element={<AllRiders />} />
             <Route path="riders/:id" element={<RiderDetailsPage />} />
-            <Route path="riders/update/:id" element={< UpdateRider/>} />
+            <Route path="riders/update/:id" element={< UpdateRider />} />
             <Route path="users" element={<UsersList />} />
             <Route path="users/addRider/:id" element={<AddRiderdata />} />
             <Route path="users/addVehicle/:id" element={<AddVehichledata />} />
-            <Route path="users/:id" element={< Userdetails/>} />
-          
-
-
-
-
-
-
-
-
+            <Route path="users/:id" element={< Userdetails />} />
           </Route>
         </Route>
 

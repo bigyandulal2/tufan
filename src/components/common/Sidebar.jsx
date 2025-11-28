@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { doLogout, getCurrentUserDetail } from '../../auth';
 import plusIcon from '../../assets/plus.jpg';
 import { ROLE_MANAGER } from '../../constant/role';
+import { PlaneIcon, PlusIcon } from 'lucide-react';
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ const Sidebar = () => {
     { name: 'Theme', icon: plusIcon, path: '/admin/theme' },
     { name: 'Language', icon: plusIcon, path: '/admin/language' },
     { name: 'Map', icon: plusIcon, path: '/admin/maps' },
+    { name: 'Announcement', icon: plusIcon, path: '/admin/announcement' },
   ];
 
   // ✅ Filter out hidden menu based on user roles
@@ -42,7 +44,7 @@ const Sidebar = () => {
 
   return (
     <aside className="border border-black rounded-[10px] w-[200px] p-4 flex flex-col justify-between h-full">
-      <div className="space-y-4 mb-4">
+      <div className="mb-4 space-y-4">
         {filteredMenuItems.map((item) => (
           <Link
             key={item.name}
