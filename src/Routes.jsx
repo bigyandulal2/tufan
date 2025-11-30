@@ -79,6 +79,7 @@ const AppRoutes = () => {
               <Route path="prices/update/:id" element={<UpdatePricePage />} />
               <Route path="maps" element={<MapComponent />} />
               <Route path='announcement' element={<Announcement />} />
+
             </Route>
 
             {/* Riders, Managers can see */}

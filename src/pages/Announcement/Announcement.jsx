@@ -1,8 +1,37 @@
 
-import { XIcon } from 'lucide-react'
+import { XIcon } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 
 const Announcement = () => {
 
+    const [branches, setBranches] = useState([]);
+    const [form, setForm] = useState({
+        branch: "",
+        role: "",
+        mode: "",
+        message: "",
+    });
+
+    const isFormComplete = form.message.trim() !== "";
+
+    const handleChange = (e) => {
+        setForm({ ...form, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        toast.success("Notification send successfully.")
+    }
+    useEffect(() => {
+        fetch("https://api.mytufan.com/api/v1/branches/")
+            .then(res => res.json())
+            .then(data => {
+                console.log("API DATA:", data);  // should log your array
+                setBranches(data);               // data is already an array
+            })
+            .catch(err => console.error("FETCH ERROR:", err));
+    }, []);
 
     return (
         <section className='flex flex-col gap-6'>
@@ -11,18 +40,27 @@ const Announcement = () => {
 
                     <div className='flex flex-col gap-2'>
                         <label class="label">Branch (optional)</label>
-                        <select className='py-1 border border-gray-300 rounded-md' class="select-box">
+                        <select
+                            name='branch'
+                            value={form.branch}
+                            onChange={handleChange}
+                            className='py-1 border border-gray-400 rounded-md select-box'>
                             <option>All Branches</option>
-                            <option>Branch A</option>
-                            <option>Branch B</option>
+                            {branches.map(branch => (
+                                <option key={branch.id} value={branch.id}>
+                                    {branch.name} ({branch.branchCode})
+                                </option>
+                            ))}
                         </select>
-                        <p className='text-xs text-gray-700'>Loaded from GET /api/v1/branches/</p>
                     </div>
-
 
                     <div className='flex flex-col gap-2'>
                         <label class="label">Role (optional)</label>
-                        <select className='py-1 border border-gray-300 rounded-md' class="select-box">
+                        <select
+                            name='role'
+                            value={form.role}
+                            onChange={handleChange}
+                            className='py-1 border border-gray-400 rounded-md select-box'>
                             <option>--Role--</option>
                             <option>Admin</option>
                             <option>Rider</option>
@@ -34,7 +72,11 @@ const Announcement = () => {
 
                     <div className='flex flex-col gap-2'>
                         <label class="label">Mode (optional)</label>
-                        <select className='py-1 border border-gray-300 rounded-md' class="select-box">
+                        <select
+                            name='mode'
+                            value={form.mode}
+                            onChange={handleChange}
+                            className='py-1 border border-gray-400 rounded-md select-box'>
                             <option>--Mode--</option>
                             <option>Rider</option>
                             <option>Passenger</option>
@@ -47,10 +89,13 @@ const Announcement = () => {
                         Message (required)
                     </label>
                     <textarea
+                        name='message'
                         className="w-full h-32 p-3 border rounded-lg outline-none focus:border-blue-500"
+                        value={form.message}
+                        onChange={handleChange}
                         placeholder="Write your message..."
-                    >
-                    </textarea>
+                    />
+
                     {/* optional */}
                     <div className='mt-4'>
                         <label>
@@ -89,12 +134,16 @@ const Announcement = () => {
                         </div>
                     </div>
                     <div className='mt-6'>
-                        {/* Send Notification button */}
                         <button
-                            className="w-full py-3 font-semibold text-center text-white transition bg-yellow-500 rounded-lg hover:bg-green-700"
+                            type="button"
+                            disabled={!isFormComplete}
+                            onClick={handleSubmit}
+                            className={`w-full py-3 font-semibold text-center text-white transition rounded-lg 
+                             ${isFormComplete ? 'bg-[#f04f18] hover:cursor-pointer hover:bg-[#d04314]' : 'bg-gray-400 cursor-not-allowed'}`}
                         >
                             Send Notification
                         </button>
+
 
                         {/* Reset button */}
                         <button
