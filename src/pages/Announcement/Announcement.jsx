@@ -1,10 +1,12 @@
-
 import { XIcon } from 'lucide-react';
-import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import { useDispatch } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { sendNotification } from '../../redux/notificationSlice';
 
 const Announcement = () => {
 
+    const dispatch = useDispatch();
     const [branches, setBranches] = useState([]);
     const [form, setForm] = useState({
         branch: "",
@@ -12,23 +14,67 @@ const Announcement = () => {
         mode: "",
         message: "",
     });
-
     const isFormComplete = form.message.trim() !== "";
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
+    const getRoleName = (role) => {
+        switch (role) {
+            case "Admin": return "ROLE_ADMIN";
+            case "Rider": return "ROLE_RIDER";
+            case "User": return "ROLE_NORMAL";
+            default: return null;
+        }
+    };
+
+    const getMode = (mode) => {
+        switch (mode) {
+            case "Passenger": return "PESSENGER";
+            case "Rider": return "RIDER";
+            default: return null;
+        }
+    };
+
+    // send notification
     const handleSubmit = (e) => {
         e.preventDefault();
-        toast.success("Notification send successfully.")
-    }
+
+        if (form.message.trim() === "") {
+            toast.error("Message is required.");
+            return;
+        }
+
+        const payload = {};
+
+        // branch → branchId
+        if (form.branch && form.branch !== "All Branches") {
+            payload.branchId = Number(form.branch);
+        }
+
+        // role → roleName
+        if (form.role && form.role !== "--Role--") {
+            payload.roleName = getRoleName(form.role);
+        }
+
+        // mode → mode (UPPERCASE)
+        if (form.mode && form.mode !== "--Mode--") {
+            payload.mode = getMode(form.mode);
+        }
+
+        payload.message = form.message.trim();
+
+        dispatch(sendNotification(payload));
+    };
+
+    // fetch data from branch api
     useEffect(() => {
         fetch("https://api.mytufan.com/api/v1/branches/")
             .then(res => res.json())
             .then(data => {
-                console.log("API DATA:", data);  // should log your array
-                setBranches(data);               // data is already an array
+                console.log("API DATA:", data);
+                setBranches(data);
             })
             .catch(err => console.error("FETCH ERROR:", err));
     }, []);
@@ -37,7 +83,7 @@ const Announcement = () => {
         <section className='flex flex-col gap-6'>
             <div className='grid w-full gap-5 p-4 border border-gray-300 rounded-md'>
                 <div className='grid w-full grid-cols-3 gap-4 '>
-
+                    {/* branches */}
                     <div className='flex flex-col gap-2'>
                         <label class="label">Branch (optional)</label>
                         <select
@@ -53,7 +99,7 @@ const Announcement = () => {
                             ))}
                         </select>
                     </div>
-
+                    {/* Roles */}
                     <div className='flex flex-col gap-2'>
                         <label class="label">Role (optional)</label>
                         <select
@@ -68,8 +114,7 @@ const Announcement = () => {
                         </select>
                         <p className='text-xs text-gray-700'>User role to target permission-level roles.</p>
                     </div>
-
-
+                    {/* Mode */}
                     <div className='flex flex-col gap-2'>
                         <label class="label">Mode (optional)</label>
                         <select
@@ -134,6 +179,7 @@ const Announcement = () => {
                         </div>
                     </div>
                     <div className='mt-6'>
+                        {/* send notification button */}
                         <button
                             type="button"
                             disabled={!isFormComplete}
@@ -143,7 +189,6 @@ const Announcement = () => {
                         >
                             Send Notification
                         </button>
-
 
                         {/* Reset button */}
                         <button

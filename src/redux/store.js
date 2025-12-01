@@ -4,7 +4,7 @@ import ridersReducer from './rider/ridersSlice'; // ✅ FIXED path
 import managersReducer from './manager/managersSlice'; // ✅ FIXED path
 import pricesSlice from './PriceSlice';
 import VehiclesReducer from './vehicleSlice';
-
+import notificationReducer from "./notificationSlice";
 
 
 export const store = configureStore({
@@ -14,6 +14,7 @@ export const store = configureStore({
     managers: managersReducer,
     prices: pricesSlice,
     vehicles: VehiclesReducer,
+    notification: notificationReducer,
 
   },
 });
