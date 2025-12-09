@@ -66,7 +66,7 @@ export default function MapComponent() {
 
 
 
-  //Stores  Location data from Api
+  //Store Location data from Api
   const [LocationData, setLocationData] = useState({});
 
   //Stores Vehicle Speed
@@ -81,7 +81,7 @@ export default function MapComponent() {
 
   // Load Google Maps JS API
   const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: "AIzaSyDbjlNnElIgSOgwHBVHeVn0nePyEJ058L4",// "AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg",//
+    googleMapsApiKey: "AIzaSyDbjlNnElIgSOgwHBVHeVn0nePyEJ058L4",   // "AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg",//
     libraries: libraries,
   });
 
