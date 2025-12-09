@@ -81,7 +81,7 @@ export default function MapComponent() {
 
   // Load Google Maps JS API
   const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: "AIzaSyDbjlNnElIgSOgwHBVHeVn0nePyEJ058L4",
+    googleMapsApiKey: "AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg",//"AIzaSyDbjlNnElIgSOgwHBVHeVn0nePyEJ058L4",
     libraries: libraries,
   });
 
