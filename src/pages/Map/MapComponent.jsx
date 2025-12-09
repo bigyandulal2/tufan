@@ -73,7 +73,7 @@ export default function MapComponent() {
   const [speeds, setSpeeds] = useState({});
 
 
-  // Ref to track if initial centering is done
+  // Ref to traceee if initial centering is done
   const initialCenterDone = useRef(false);
 
 
