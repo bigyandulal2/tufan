@@ -103,7 +103,7 @@ const LoginPage = () => {
                       type="submit"
                       variant="secondary"
                     >
-                      Loginnnnnn
+                      Login
                     </Button>
                   </div>
                 </form>
