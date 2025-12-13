@@ -28,6 +28,7 @@ export const isLoggedIn = () => {
     if (!token) return false;
 
     const decoded = parseJwt(token);
+   
 
     // Check token expiration
     if (!decoded || Date.now() >= decoded.exp * 1000) {
@@ -90,4 +91,13 @@ export const getToken = () => {
     return parsed?.token;
   }
   return null;
+};
+// check if current user is manager
+export const isManager = () => {
+  if (!isLoggedIn()) return false;
+
+  const parsed = JSON.parse(storage.getItem(STORAGE_KEY));
+  const roles = parsed?.user?.roles?.map(r => r.name);
+
+  return roles?.includes(ROLE_MANAGER);
 };

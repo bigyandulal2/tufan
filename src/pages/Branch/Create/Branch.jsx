@@ -4,6 +4,7 @@ import AddressSection from './AddressSection';
 import ContactSection from './ContactSection';
 
 const Branch = ({ formData, handleChange }) => {
+  
   return (
     <>
       <BranchInfoSection formData={formData} handleChange={handleChange} />

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { Search, Plus, User } from 'lucide-react';
+import { isManager } from '../../auth';
 
 const ListTable = ({
   data,
@@ -93,13 +94,15 @@ const ListTable = ({
                 >
                   All ({data.length})
                 </button>
-
-                <button
-                  onClick={handleOnCreate}
-                  className="flex items-center gap-2 bg-[#f04f18] text-white px-4 py-1 rounded-full hover:bg-[#d34313] transition"
-                >
-                  <Plus size={18} /> Create
-                </button>
+          
+              {
+                !isManager() && <button
+                onClick={handleOnCreate}
+                className="flex items-center gap-2 bg-[#f04f18] text-white px-4 py-1 rounded-full hover:bg-[#d34313] transition"
+              >
+                <Plus size={18} /> Create
+              </button>
+              }  
               </>
 
             )}

@@ -6,6 +6,7 @@ import BranchDetails from './BranchDetails';
 import Button from '../../../components/ui/Button';
 import { deleteBranchApi } from '../../../services/branch';
 import { toast } from 'react-toastify';
+import { isManager } from '../../../auth';
 
 const BranchDetailsPage = () => {
   const [loading, setLoading] = useState(false);
@@ -60,7 +61,7 @@ const BranchDetailsPage = () => {
   return (
     <div className="max-w-4xl mx-auto mt-12 p-8 bg-white shadow-2xl rounded-2xl border- border-gray-200">
       <BranchDetails branch={branch} />
-      <div className="flex justify-end gap-4 mt-8">
+      {!isManager() && <div className="flex justify-end gap-4 mt-8">
         <Button
           className="w-[120px] h-[39px] flex items-center justify-center bg-[#f04f18] hover:bg-orange-800"
           type="submit"
@@ -77,7 +78,8 @@ const BranchDetailsPage = () => {
         >
           {loading ? "Deleting..." : "Delete"}
         </Button>
-      </div>
+      </div> }
+      
     </div>
   );
 };
