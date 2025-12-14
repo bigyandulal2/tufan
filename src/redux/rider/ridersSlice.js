@@ -79,7 +79,7 @@ const ridersSlice = createSlice({
     items: [],
     pendingItems: [],
     selectedRider: null,
-
+    currentPage:1,
     status: 'idle',
     pendingRidersStatus: 'idle',
     error: null,
@@ -99,6 +99,9 @@ const ridersSlice = createSlice({
       state.imageUrls = {};
       state.imageStatuses = {};
       state.imageErrors = {};
+    },
+    setCurrentPage: (state, action) => {
+      state.currentPage = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -161,5 +164,5 @@ const ridersSlice = createSlice({
   },
 });
 
-export const { clearRiders } = ridersSlice.actions;
+export const { clearRiders,setCurrentPage } = ridersSlice.actions;
 export default ridersSlice.reducer;

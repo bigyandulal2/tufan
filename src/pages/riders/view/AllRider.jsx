@@ -13,6 +13,7 @@ import {
   fetchPendingRiders,
   fetchRiderImage,
   fetchRiders,
+  setCurrentPage
 } from '../../../redux/rider/ridersSlice';
 import RenderImage from './RiderImage';
 
@@ -21,7 +22,7 @@ const AllRiders = () => {
 
   // State for managing active tab and pagination
   const [activeTab, setActiveTab] = useState('All');
-  const [currentPage, setCurrentPage] = useState(1);
+  // const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 15;
 
   const fetchedImagesRef = useRef(new Set());
@@ -33,15 +34,16 @@ const AllRiders = () => {
   const ridersStatus = useSelector(selectRidersStatus);
   const pendingStatus = useSelector(selectPendingRidersStatus);
   const branches = useSelector((state) => state.branches.items);
+  const currentPage=useSelector((state)=>state.riders.currentPage)
 
   const isPendingTab = activeTab === 'Pending';
   const dataToDisplay = isPendingTab ? pendingRiders : riders;
   const dataStatus = isPendingTab ? pendingStatus : ridersStatus;
 
   //Reset page to 1
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [activeTab]);
+  // useEffect(() => {
+  //   dispatch(setCurrentPage(1));
+  // }, [activeTab,dispatch]);
 
   // Fetch all branches
   useEffect(() => {
@@ -154,7 +156,7 @@ const AllRiders = () => {
         {/* rider list  */}
         <div className="flex justify-center items-center gap-2 mt-4">
           <button
-            onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+            onClick={() =>   dispatch(setCurrentPage(Math.max(currentPage - 1, 1)))}
             disabled={currentPage === 1}
             className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
           >
@@ -165,7 +167,7 @@ const AllRiders = () => {
           {currentPage > 2 && (
             <>
               <button
-                onClick={() => setCurrentPage(1)}
+                onClick={() => dispatch(setCurrentPage(1))}
                 className={`px-3 py-1 rounded ${currentPage === 1 ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
               >
                 1
@@ -180,7 +182,7 @@ const AllRiders = () => {
             .map((page) => (
               <button
                 key={page}
-                onClick={() => setCurrentPage(page)}
+                onClick={() => dispatch(setCurrentPage(page))}
                 className={`px-3 py-1 rounded ${currentPage === page ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
               >
                 {page}
@@ -192,7 +194,7 @@ const AllRiders = () => {
             <>
               {currentPage < totalPages - 2 && <span className="px-2">...</span>}
               <button
-                onClick={() => setCurrentPage(totalPages)}
+                onClick={() => dispatch(setCurrentPage(totalPages))}
                 className={`px-3 py-1 rounded ${currentPage === totalPages ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
               >
                 {totalPages}
@@ -201,7 +203,7 @@ const AllRiders = () => {
           )}
 
           <button
-            onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+            onClick={() =>  dispatch(setCurrentPage(Math.min(currentPage + 1, totalPages)))}
             disabled={currentPage === totalPages}
             className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
           >
