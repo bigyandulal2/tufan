@@ -1,1 +1,1 @@
-simple-tufan.netlify.app
+https://simple-tufan.netlify.app
