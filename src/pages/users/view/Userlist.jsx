@@ -1,68 +1,46 @@
 import { useEffect, useState } from "react";
-import { useDispatch } from 'react-redux';
+import { useDispatch,useSelector } from 'react-redux';
 import { useNavigate } from "react-router-dom";
 import ListTable from '../../../components/ui/BranchTable';
 import { fetchBranchById } from '../../../redux/branchSlice';
-import { loadAllUsers } from "../../../services/userlist";
-
+import { fetchUsers,addBranchNamesToUsers,setCurrentPage } from "../../../redux/loadAllUserSlice";
 function UsersList() {
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  // load all users slice
+  const { users, loading, fetched, currentPage } = useSelector(
+    (state) => state.users
+  );
+  //fetch only if not cached
+  useEffect(() => {
+    if (!fetched) {
+      dispatch(fetchUsers());
+    }
+  }, [dispatch, fetched]);
   // Pagination state
-  const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
 
-  // Fetch all users on mount
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const data = await loadAllUsers();
-        setUsers(data);
-        console.log("Fetched users:", data);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching users:", error);
-        setLoading(false);
-      }
-    };
-
-    fetchUsers();
-  }, []);
-
-  // After users load, fetch branch info for each unique branchId
-  useEffect(() => {
-    if (users.length === 0) return;
-
-    const uniqueBranchIds = [...new Set(users.map(u => u.branchId).filter(Boolean))];
-    if (uniqueBranchIds.length === 0) return;
-
+    if (!users.length) return;
+    if (users.every(u => u.BranchName)) return;
+  
     const fetchBranches = async () => {
-      try {
-        const branchMap = {};
-
-        await Promise.all(
-          uniqueBranchIds.map(async (id) => {
-            const resultAction = await dispatch(fetchBranchById(id));
-            branchMap[id] = resultAction.payload?.name || "Unknown";
-          })
-        );
-        const usersWithBranchNames = users.map(user => ({
-          ...user,
-          BranchName: branchMap[user.branchId] || "Unknown",
-        }));
-
-        setUsers(usersWithBranchNames);
-      } catch (error) {
-        console.error("Error fetching branch names:", error);
-      }
+      const branchMap = {};
+      const uniqueBranchIds = [...new Set(users.map(u => u.branchId).filter(Boolean))];
+  
+      await Promise.all(
+        uniqueBranchIds.map(async (id) => {
+          const res = await dispatch(fetchBranchById(id));
+          branchMap[id] = res.payload?.name || "Unknown";
+        })
+      );
+  
+      dispatch(addBranchNamesToUsers(branchMap));
     };
-
+  
     fetchBranches();
-  }, [users, dispatch]);
+  }, [dispatch, users]);
+  
 
   // Pagination logic
   const totalPages = Math.ceil(users.length / itemsPerPage);
@@ -93,7 +71,7 @@ function UsersList() {
       {/* Pagination Controls */}
       <div className="flex justify-center items-center gap-2 mt-4">
         <button
-          onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+          onClick={() => dispatch(setCurrentPage(Math.max(currentPage - 1, 1)))}
           disabled={currentPage === 1}
           className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
         >
@@ -103,7 +81,7 @@ function UsersList() {
         {currentPage > 2 && (
           <>
             <button
-              onClick={() => setCurrentPage(1)}
+              onClick={() => dispatch(setCurrentPage(1))}
               className={`px-3 py-1 rounded ${currentPage === 1 ? "bg-blue-500 text-white" : "bg-gray-200"}`}
             >
               1
@@ -117,7 +95,7 @@ function UsersList() {
           .map((page) => (
             <button
               key={page}
-              onClick={() => setCurrentPage(page)}
+              onClick={() => dispatch(setCurrentPage(page))}
               className={`px-3 py-1 rounded ${currentPage === page ? "bg-blue-500 text-white" : "bg-gray-200"}`}
             >
               {page}
@@ -128,7 +106,7 @@ function UsersList() {
           <>
             {currentPage < totalPages - 2 && <span className="px-2">...</span>}
             <button
-              onClick={() => setCurrentPage(totalPages)}
+              onClick={() => dispatch(setCurrentPage(totalPages))}
               className={`px-3 py-1 rounded ${currentPage === totalPages ? "bg-blue-500 text-white" : "bg-gray-200"}`}
             >
               {totalPages}
@@ -137,7 +115,7 @@ function UsersList() {
         )}
 
         <button
-          onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+          onClick={() => dispatch(setCurrentPage((p) => Math.min(p + 1, totalPages)))}
           disabled={currentPage === totalPages}
           className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
         >

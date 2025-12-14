@@ -5,7 +5,7 @@ import managersReducer from './manager/managersSlice'; // ✅ FIXED path
 import pricesSlice from './PriceSlice';
 import VehiclesReducer from './vehicleSlice';
 import notificationReducer from "./notificationSlice";
-
+import usersReducer from "./loadAllUserSlice"
 
 export const store = configureStore({
   reducer: {
@@ -15,6 +15,7 @@ export const store = configureStore({
     prices: pricesSlice,
     vehicles: VehiclesReducer,
     notification: notificationReducer,
+    users: usersReducer,
 
   },
 });
