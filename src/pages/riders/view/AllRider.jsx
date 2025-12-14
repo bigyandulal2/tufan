@@ -22,7 +22,7 @@ const AllRiders = () => {
   // State for managing active tab and pagination
   const [activeTab, setActiveTab] = useState('All');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  const itemsPerPage = 15;
 
   const fetchedImagesRef = useRef(new Set());
 
@@ -125,7 +125,7 @@ const AllRiders = () => {
   return (
 
     <div className="flex-1">
-      <div className="border border-black rounded-[10px] p-6 min-h-[736px]">
+      <div className="border border-black rounded-[10px] p-6 h-[736px] overflow-auto">
         <h1 className="text-[20px] font-bold text-black text-center mb-6">
           Riders List
         </h1>

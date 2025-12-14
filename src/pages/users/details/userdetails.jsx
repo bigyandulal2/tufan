@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-
+import { IoArrowBackCircle } from "react-icons/io5";
 import { fetchBranchById } from '../../../redux/branchSlice';
 import { loadUserById, getRiderVehicleData } from '../../../services/userlist';
 
@@ -64,6 +64,7 @@ const RiderDetailsStandalone = () => {
 
   return (
     <div className="px-4 md:px-10 pb-10">
+       <IoArrowBackCircle size={30} className='cursor-pointer hover:text-gray-800' onClick={()=>Navigate(-1)}/>
       <div className="flex justify-center mb-6">
         <img
           src={userFallbackImage}

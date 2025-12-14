@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import { fetchRiderById } from '../../../redux/rider/ridersSlice';
 import RiderDetails from './RiderDetails';
 import Button from '../../../components/ui/Button';
+import { IoArrowBackCircle } from "react-icons/io5";
 
 import {
   approveRiderApi,
@@ -122,7 +123,10 @@ const RiderDetailsPage = () => {
   return (
     <div className="flex-1">
       <div className="border border-black rounded-[10px] p-6 min-h-[736px]">
-        <h1 className="text-[20px] font-bold text-black text-center mt-6 mb-2">User Information</h1>
+        <div className='flex  items-center gap-10 mb-3 ml-3'>
+
+             <IoArrowBackCircle size={30} className='cursor-pointer hover:text-gray-800' onClick={()=>navigate(-1)}/>
+             <h1 className="text-[20px] font-bold text-black text-center  flex-1">User Information</h1>        </div> 
         <div className="h-1 mx-4 bg-[#f04f18] border border-[#f04f18] rounded-[4px]"></div>
 
         <div className="w-full px-2 max-md:ml-0 max-md:w-full">
