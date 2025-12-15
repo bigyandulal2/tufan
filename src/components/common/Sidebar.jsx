@@ -44,7 +44,6 @@ const Sidebar = () => {
 
   return (
     <aside className="border border-black rounded-[10px] w-[200px] p-4 flex flex-col justify-between h-full">
-     {user &&   <div className='flex items-center justify-center'> <h2 className='text-center bg-green-500 text-white rounded-lg p-2 mb-2'>Active</h2>   </div>   } 
       <div className="mb-4 space-y-4">
         {filteredMenuItems.map((item) => (
           <Link

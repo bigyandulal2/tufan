@@ -37,16 +37,16 @@ const Header = () => {
           Tufan Transport Pvt. Ltd.
         </h1>
         <p className="text-[24px] font-medium text-black font-['Plus_Jakarta_Sans']">
-          Head Office Portal
+          {branch?.name} Office Portal
         </p>
 
-        <p className="text-[18px] font-medium">
-          Welcome, <strong className="text-green-500">{user.data.name}</strong>
-        </p>
+        <p className="text-[18px] font-medium flex items-center justify-end gap-2">
+  Welcome,
+  <strong className="relative  text-[#f04f18] flex items-center gap-2">
+    {user.data.name}
+  </strong>
+</p>
 
-        <p className="text-[18px] font-medium text-gray-700">
-          Branch: {branch?.name || 'Branch info not available'}
-        </p>
       </div>
     </header>
   );
