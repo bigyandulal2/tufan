@@ -114,13 +114,16 @@ function UsersList() {
           </>
         )}
 
-        <button
-          onClick={() => dispatch(setCurrentPage((p) => Math.min(p + 1, totalPages)))}
-          disabled={currentPage === totalPages}
-          className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
-        >
-          Next
-        </button>
+<button
+  onClick={() =>
+    dispatch(setCurrentPage(Math.min(currentPage + 1, totalPages)))
+  }
+  disabled={currentPage === totalPages}
+  className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+>
+  Next
+</button>
+
       </div>
     </div>
   );
