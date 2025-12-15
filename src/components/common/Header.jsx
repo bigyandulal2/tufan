@@ -18,7 +18,8 @@ const Header = () => {
     }
   }, [user, dispatch]);
 
-  if (!user?.login) return;
+  if (user?.loading) return <div>Loading user...</div>;
+  if (!user?.login) return null;
   if (status === 'loading') return <div>Loading branch...</div>;
   if (status === 'failed') return <div>Error loading branch: {error}</div>;
 

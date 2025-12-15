@@ -7,13 +7,15 @@ function UserProvider({ children }) {
 
   const [user, setUser] = useState({
     data: {},
-    login: false
+    login: false,
+    loading: true,
   })
 
   useEffect(() => {
     setUser({
       data: getCurrentUserDetail(),
-      login: isLoggedIn()
+      login: isLoggedIn(),
+      loading: false, // done loading
     })
   }, [])
 
