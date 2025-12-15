@@ -18,7 +18,7 @@ const Header = () => {
     }
   }, [user, dispatch]);
 
-  if (!user?.login) return <div>Please log in</div>;
+  
   if (status === 'loading') return <div>Loading branch...</div>;
   if (status === 'failed') return <div>Error loading branch: {error}</div>;
 
