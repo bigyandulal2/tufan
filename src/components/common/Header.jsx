@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchBranchById } from '../../redux/branchSlice';
 import { getCurrentUserDetail, isLoggedIn } from '../../auth';
+import { isManager } from '../../auth';
 
 const Header = () => {
   const [user, setUser] = useState({ data: null, login: false });
@@ -36,8 +37,11 @@ const Header = () => {
         <h1 className="text-[26px] font-bold text-[#f04f18] font-['Plus_Jakarta_Sans']">
           Tufan Transport Pvt. Ltd.
         </h1>
+        {!isManager() &&<p className="text-[24px] font-medium text-black font-['Plus_Jakarta_Sans']">
+           Damak-9,Jhapa
+        </p>}
         <p className="text-[24px] font-medium text-black font-['Plus_Jakarta_Sans']">
-          {branch?.name} Office Portal
+          {isManager()? branch?.name:"Head" }   Office Portal
         </p>
 
         <p className="text-[18px] font-medium flex items-center justify-end gap-2">
