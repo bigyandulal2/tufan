@@ -18,7 +18,6 @@ const ListTable = ({
 }) => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
-
   const handleRowClick = (row) => {
     if (onRowClick) {
       onRowClick(row);
@@ -42,6 +41,8 @@ const ListTable = ({
       )
     )
     : [];
+
+   
 
   const renderCell = (key, value) => {
     if (key === 'image') {
@@ -125,7 +126,7 @@ const ListTable = ({
           <tbody>
             {filteredData.map((row, rowIndex) => (
               <tr
-                key={rowIndex}
+                key={row.id}
                 className="cursor-pointer hover:bg-gray-100 transition"
                 onClick={() => handleRowClick(row)}
               >
