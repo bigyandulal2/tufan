@@ -4,30 +4,28 @@ import { useState } from 'react'
 import { getCurrentUserDetail, isLoggedIn } from '../auth'
 import userContext from './userContext'
 function UserProvider({ children }) {
-
   const [user, setUser] = useState({
-    data: {},
-    login: false,
-    loading: true,
-  })
+    data: null,
+    login: null,
+  });
 
   useEffect(() => {
+    const data = getCurrentUserDetail();
+    const loggedIn = isLoggedIn();
+
     setUser({
-      data: getCurrentUserDetail(),
-      login: isLoggedIn(),
-      loading: false, // done loading
-    })
-  }, [])
-
-
+      data: data || null,
+      login: loggedIn,
+      
+    });
+  }, []);
 
   return (
-
     <userContext.Provider value={{ user, setUser }}>
       {children}
     </userContext.Provider>
-
-  )
+  );
 }
+
 
 export default UserProvider

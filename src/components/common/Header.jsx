@@ -1,24 +1,32 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import userContext from '../../context/userContext';
 import { fetchBranchById } from '../../redux/branchSlice';
+import { getCurrentUserDetail, isLoggedIn } from '../../auth';
 
 const Header = () => {
-  const { user } = useContext(userContext);
+  const [user, setUser] = useState({ data: null, login: false });
   const dispatch = useDispatch();
 
   const branch = useSelector((state) => state.branches.selectedBranch);
   const status = useSelector((state) => state.branches.status);
   const error = useSelector((state) => state.branches.error);
 
+  // ✅ Load user when Header mounts
   useEffect(() => {
-    if (!user.loading && user.login && user.data.branchId) {
+    const currentUser = getCurrentUserDetail();
+    const login = isLoggedIn();
+    setUser({ data: currentUser, login });
+  }, []);
+
+  // ✅ Fetch branch when user info is ready
+  useEffect(() => {
+    if (user.login && user.data?.branchId) {
       dispatch(fetchBranchById(user.data.branchId));
     }
   }, [user, dispatch]);
 
-  if (user.loading) return <div>Loading user...</div>;
-  if (!user.loading && !user.login) return <div>Please log in</div>;
+  if (!user.data) return null;
+  if (!user.login) return <div className='hidden'>Please log in</div>;
   if (status === 'loading') return <div>Loading branch...</div>;
   if (status === 'failed') return <div>Error loading branch: {error}</div>;
 
