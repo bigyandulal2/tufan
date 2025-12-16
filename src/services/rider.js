@@ -17,6 +17,18 @@ export const getRiderById = async (riderId) => {
   });
 };
 
+// Rider pagination version 
+export const getRidersPaginated = async ({ pageNumber = 0, pageSize = 10, sortBy = 'id', sortDir = 'asc' } = {}) => {
+  return handleRequest(
+    () =>
+      privateAxios.get(
+        `/riders?pageNumber=${pageNumber}&pageSize=${pageSize}&sortBy=${sortBy}&sortDir=${sortDir}`
+      ),
+    {
+      onErrorMessage: "Failed to fetch riders",
+    }
+  );
+};
 
 
 /*export const loadPendingRiders = async () => {

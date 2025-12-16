@@ -1,3 +1,4 @@
+
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import ListTable from '../../../components/ui/BranchTable';
@@ -8,54 +9,57 @@ import {
   selectRiderImages,
   selectRidersItems,
   selectRidersStatus,
+  selectRidersPages,
+  selectRidersState
 } from '../../../redux/rider/riderSelectors';
 import {
+  fetchPaginatedRiders,
   fetchPendingRiders,
   fetchRiderImage,
-  fetchRiders,
   setCurrentPage,
 } from '../../../redux/rider/ridersSlice';
 import RenderImage from './RiderImage';
 
 const AllRiders = () => {
   const dispatch = useDispatch();
-
   const [activeTab, setActiveTab] = useState('All');
-  const itemsPerPage = 15;
   const fetchedImagesRef = useRef(new Set());
 
-  // ✅ FORCE ARRAYS (IMPORTANT)
+  // Redux state
   const riders = useSelector(selectRidersItems) ?? [];
+  const realData=useSelector(selectRidersState);
+  console.log("realData is hereeeeee",realData)
   const pendingRiders = useSelector(selectPendingRidersItems) ?? [];
   const riderImages = useSelector(selectRiderImages) ?? {};
   const ridersStatus = useSelector(selectRidersStatus);
   const pendingStatus = useSelector(selectPendingRidersStatus);
   const branches = useSelector((state) => state.branches.items) ?? [];
   const currentPage = useSelector((state) => state.riders.currentPage) ?? 1;
-   console.log("riderssss here",riders);
+  const riderPages = useSelector(selectRidersPages) ?? 1;
+  console.log("riderpagesss here",riderPages);
+  const pageNumbers = Array.from({ length: riderPages }, (_, i) => i + 1);
   const isPendingTab = activeTab === 'Pending';
-
   const dataToDisplay = isPendingTab ? pendingRiders : riders;
   const dataStatus = isPendingTab ? pendingStatus : ridersStatus;
 
-  // ✅ Reset page on tab change
-  useEffect(() => {
-    dispatch(setCurrentPage(1));
-  }, [activeTab, dispatch]);
+  // Reset page when tab changes
+  // useEffect(() => {
+  //   dispatch(setCurrentPage(1));
+  // }, [activeTab, dispatch]);
 
-  // Fetch branches
+  // Fetch branches once
   useEffect(() => {
     dispatch(fetchBranches());
   }, [dispatch]);
 
-  // Fetch riders based on tab
+  // Fetch riders for current page
   useEffect(() => {
     if (isPendingTab) {
       dispatch(fetchPendingRiders());
     } else {
-      dispatch(fetchRiders());
+      dispatch(fetchPaginatedRiders(currentPage - 1)); // API is 0-based
     }
-  }, [dispatch, isPendingTab]);
+  }, [dispatch, currentPage, isPendingTab]);
 
   // Fetch rider images
   useEffect(() => {
@@ -93,17 +97,6 @@ const AllRiders = () => {
     });
   }, [dataToDisplay, riderImages, branches]);
 
-  // Pagination
-  const totalPages = Math.max(
-    1,
-    Math.ceil(formattedData.length / itemsPerPage)
-  );
-
-  const paginatedData = useMemo(() => {
-    const start = (currentPage - 1) * itemsPerPage;
-    return formattedData.slice(start, start + itemsPerPage);
-  }, [formattedData, currentPage]);
-
   // Rider counts
   const carRiderCount = riders.filter(
     (r) => r?.category?.categoryTitle?.toLowerCase() === 'car'
@@ -134,7 +127,7 @@ const AllRiders = () => {
         </div>
 
         <ListTable
-          data={paginatedData}
+          data={formattedData}
           headers={['ID', 'Name', 'Image', 'Category', 'Branch Name', 'Balance', 'Status']}
           rowDataKeys={['id', 'name', 'image', 'category', 'BranchName', 'balance', 'status']}
           module="riders"
@@ -154,15 +147,25 @@ const AllRiders = () => {
             Prev
           </button>
 
-          <span className="px-3 py-1 bg-blue-500 text-white rounded">
-            {currentPage}
-          </span>
+          <div className="flex justify-center gap-2">
+            {pageNumbers.map((page) => (
+              <button
+                key={page}
+                onClick={() => dispatch(setCurrentPage(page))}
+                className={`px-3 py-1 rounded ${
+                  currentPage === page ? 'bg-blue-500 text-white' : 'bg-gray-200'
+                }`}
+              >
+                {page}
+              </button>
+            ))}
+          </div>
 
           <button
             onClick={() =>
-              dispatch(setCurrentPage(Math.min(currentPage + 1, totalPages)))
+              dispatch(setCurrentPage(Math.min(currentPage + 1, riderPages)))
             }
-            disabled={currentPage === totalPages}
+            disabled={currentPage === riderPages}
             className="px-3 py-1 bg-gray-200 rounded"
           >
             Next
@@ -174,3 +177,4 @@ const AllRiders = () => {
 };
 
 export default AllRiders;
+

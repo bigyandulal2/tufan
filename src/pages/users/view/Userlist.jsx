@@ -11,6 +11,7 @@ function UsersList() {
   const { users, loading, fetched, currentPage } = useSelector(
     (state) => state.users
   );
+  console.log("userrssss",users);
   //fetch only if not cached
   useEffect(() => {
     if (!fetched) {

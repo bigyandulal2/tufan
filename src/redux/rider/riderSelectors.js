@@ -1,11 +1,12 @@
 import { createSelector } from 'reselect';
 
-const selectRidersState = (state) => state.riders;
+export const selectRidersState = (state) => state.riders;
+
 
 // 🔹 All Riders
 export const selectRidersItems = createSelector(
   [selectRidersState],
-  (ridersState) => ridersState?.items?.content || []
+  (ridersState) => ridersState?.items || []
 );
 
 // 🔹 Pending Riders
@@ -61,3 +62,9 @@ export const selectRiderImageErrorByFileName = (fileName) =>
     [selectRidersState],
     (ridersState) => ridersState?.imageErrors?.[fileName] || null
   );
+
+//  total number of pages 
+export const selectRidersPages = createSelector(
+  [selectRidersState],
+  (ridersState) => ridersState?.totalPages || []
+);

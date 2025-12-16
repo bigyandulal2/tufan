@@ -6,6 +6,7 @@ import {
   getRiderById,
   loadPendingRiders,
   getRiderImage,
+  getRidersPaginated
 } from '../../services/rider';
 
 // 🔹 All Riders
@@ -16,6 +17,21 @@ export const fetchRiders = createAsyncThunk(
       return await loadAllRider();
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Error fetching riders');
+    }
+  }
+);
+// fetch riders bypagination 
+export const fetchPaginatedRiders = createAsyncThunk(
+  'riders/fetchPaginatedRiders',
+  async (pageNumber = 0, { rejectWithValue }) => {
+    try {
+      // Call the reusable API function
+      const response = await getRidersPaginated({ pageNumber });
+      return response; // This returns the full pagination object from API
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || 'Error fetching riders'
+      );
     }
   }
 );
@@ -103,6 +119,7 @@ const ridersSlice = createSlice({
     setCurrentPage: (state, action) => {
       state.currentPage = action.payload;
     },
+
   },
   extraReducers: (builder) => {
     builder
@@ -160,6 +177,19 @@ const ridersSlice = createSlice({
         const { fileName, error } = action.payload;
         state.imageStatuses[fileName] = 'failed';
         state.imageErrors[fileName] = error;
+      })
+      //paginated data
+      .addCase(fetchPaginatedRiders.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(fetchPaginatedRiders.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.items = action.payload.content ?? []; // ✅ store only content array
+        state.totalPages = action.payload.totalPages ?? 1; // ✅ save total pages for pagination
+      })
+      .addCase(fetchPaginatedRiders.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload;
       });
   },
 });
