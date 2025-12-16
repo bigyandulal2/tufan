@@ -15,7 +15,7 @@ const Sidebar = () => {
   const isManager = roles.includes(ROLE_MANAGER);
 
   const menuItems = [
-    { name: 'Branches', icon: plusIcon, path: '/admin/branches' },
+    { name: 'Branches', icon: plusIcon, path: '/admin/branches',hiddenFor:['manager'] },
     { name: 'Manager', icon: plusIcon, path: '/admin/managers', hiddenFor: ['manager'] },
     { name: 'Riders', icon: plusIcon, path: '/admin/riders' },
     { name: 'Price', icon: plusIcon, path: '/admin/prices', hiddenFor: ['manager'] },
