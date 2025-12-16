@@ -5,7 +5,7 @@ import { fetchManagerById, deleteManager } from '../../../redux/manager/managers
 import ManagerDetails from './ManagerDetails';
 import Button from '../../../components/ui/Button';
 import { toast } from 'react-toastify';
-
+import { IoArrowBackCircle } from 'react-icons/io5';
 const ManagerDetailsPage = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
@@ -54,6 +54,7 @@ const ManagerDetailsPage = () => {
   return (
     <div className="flex-1">
       <div className="border border-black rounded-[10px] p-6 min-h-[736px]">
+      <IoArrowBackCircle size={30} className='cursor-pointer hover:text-gray-800' onClick={()=>navigate(-1)}/>
         <h1 className="text-[20px] font-bold text-black text-center mt-6 mb-2">Manager Information</h1>
         <div className="h-1 mx-4 bg-[#f04f18] border border-[#f04f18] rounded-[4px]"></div>
 

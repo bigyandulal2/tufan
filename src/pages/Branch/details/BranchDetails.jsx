@@ -1,11 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
+import { IoArrowBackCircle } from 'react-icons/io5';
+import { useNavigate } from 'react-router-dom';
 const BranchDetails = ({ branch }) => {
- 
+   const navigate=useNavigate();
   return (
     <div >
-
+    <IoArrowBackCircle size={30} className='cursor-pointer hover:text-gray-800' onClick={()=>navigate(-1)}/>
       <h2 className="text-3xl font-bold text-gray-800 mb-6">Branch Details</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

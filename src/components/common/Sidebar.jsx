@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { doLogout, getCurrentUserDetail } from '../../auth';
 import plusIcon from '../../assets/plus.jpg';
 import { ROLE_MANAGER } from '../../constant/role';
-import { PlaneIcon, PlusIcon } from 'lucide-react';
+
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -21,9 +21,9 @@ const Sidebar = () => {
     { name: 'Price', icon: plusIcon, path: '/admin/prices', hiddenFor: ['manager'] },
     { name: 'Revenue', icon: plusIcon, path: '/admin/revenue' },
     { name: 'Users', icon: plusIcon, path: '/admin/users' },
-    { name: 'Blogs', icon: plusIcon, path: '/admin/blogs' },
-    { name: 'Theme', icon: plusIcon, path: '/admin/theme' },
-    { name: 'Language', icon: plusIcon, path: '/admin/language' },
+    // { name: 'Blogs', icon: plusIcon, path: '/admin/blogs' },
+    // { name: 'Theme', icon: plusIcon, path: '/admin/theme' },
+    // { name: 'Language', icon: plusIcon, path: '/admin/language' },
     { name: 'Map', icon: plusIcon, path: '/admin/maps' },
     { name: 'Announcement', icon: plusIcon, path: '/admin/announcement' },
   ];

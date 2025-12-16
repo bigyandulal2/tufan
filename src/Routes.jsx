@@ -56,9 +56,9 @@ const AppRoutes = () => {
           <Route element={<AdminLayout />}>
 
 
-            <Route path="blogs" element={<UnderDevelopment />} />
+            {/* <Route path="blogs" element={<UnderDevelopment />} />
             <Route path="theme" element={<UnderDevelopment />} />
-            <Route path="language" element={<UnderDevelopment />} />
+            <Route path="language" element={<UnderDevelopment />} /> */}
 
             {/* Rider & Manager can see branches */}
             <Route path="branches/create" element={<BranchCreationPage />} />
