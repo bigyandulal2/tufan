@@ -22,6 +22,21 @@ const STATUS_OPTIONS = [
   { label: 'Rejected', value: 'Rejected' },
   { label: 'Approved', value: '' },
 ];
+const BRANCH_OPTIONS = [
+  { label: 'All Branches', value: 'All' },
+  { label: 'Bagmati', value: '1' },
+  { label: 'Koshi', value: '4' },
+  { label: 'Madhes', value: '63' },
+  { label: 'Gandaki', value: '64' },
+  { label: 'Karnali', value: '65' },
+  { label: 'Sudurpaschim', value: '66' },
+  { label: 'Durgaprasai', value: '67' },
+];
+const CATEGORY_OPTIONS = [
+  { label: 'All Categories', value: 'All' },
+  { label: 'Bike', value: '1' },
+  { label: 'Car', value: '2' },
+];
 
 const AllRiders = () => {
   const dispatch = useDispatch();
@@ -37,8 +52,11 @@ const AllRiders = () => {
   const riderPages = useSelector(selectRidersPages) ?? 1;
   const pageNumbers = Array.from({ length: riderPages }, (_, i) => i + 1);
 
-  // Reset page when filter changes
+  // filterbranch 
+  const [filterBranch, setFilterBranch] = useState('All');
+  const [filterCategory, setFilterCategory] = useState('All');
 
+  console.log("riderss",riders);
 
   // Fetch branches once
   useEffect(() => {
@@ -47,14 +65,40 @@ const AllRiders = () => {
 
   // Fetch riders for current page & filter
   useEffect(() => {
-    if (filterStatus === 'All') {
-      // Use the “All riders” paginated API
+    const filters = {
+      pageNumber: currentPage - 1,
+    };
+  
+    if (filterStatus !== 'All') {
+      filters.status = filterStatus;
+    }
+  
+    if (filterBranch !== 'All') {
+      filters.branchId = filterBranch;
+    }
+  
+    if (filterCategory !== 'All') {
+      filters.categoryId = filterCategory;
+    }
+  
+    if (
+      filterStatus === 'All' &&
+      filterBranch === 'All' &&
+      filterCategory === 'All'
+    ) {
       dispatch(fetchPaginatedRiders(currentPage - 1));
     } else {
-      // Use filtered API
-      dispatch(fetchPaginatedRidersWithFilters({ pageNumber: currentPage - 1, status: filterStatus }));
+      dispatch(fetchPaginatedRidersWithFilters(filters));
     }
-  }, [dispatch, currentPage, filterStatus]);
+  }, [
+    dispatch,
+    currentPage,
+    filterStatus,
+    filterBranch,
+    filterCategory,
+  ]);
+  
+  
 
   // Fetch rider images
   useEffect(() => {
@@ -110,28 +154,65 @@ const AllRiders = () => {
 
         {/* Status Dropdown */}
         <div className="flex justify-between items-center mb-4">
-          <div className="flex gap-4">
-            <p className="font-semibold">Total on Page: {totalRidersInView}</p>
-            <p className="font-semibold">Car on Page: {carRiderCount}</p>
-            <p className="font-semibold">Bike on Page: {bikeRiderCount}</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <label htmlFor="rider-status-filter" className="font-semibold">
-              Filter by Status:
-            </label>
-            <select
-              id="rider-status-filter"
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="p-2 border border-gray-300 rounded"
-            >
-              {STATUS_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
+        <div className="flex gap-6 items-center mb-4">
+  {/* Status Filter */}
+  <div className="flex items-center gap-2">
+    <label htmlFor="rider-status-filter" className="font-semibold">
+      Status:
+    </label>
+    <select
+      id="rider-status-filter"
+      value={filterStatus}
+      onChange={(e) => setFilterStatus(e.target.value)}
+      className="p-2 border border-gray-300 rounded"
+    >
+      {STATUS_OPTIONS.map((option) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </select>
+  </div>
+
+  {/* Branch Filter */}
+  <div className="flex items-center gap-2">
+    <label htmlFor="rider-branch-filter" className="font-semibold">
+      Branch:
+    </label>
+    <select
+      id="rider-branch-filter"
+      value={filterBranch}
+      onChange={(e) => setFilterBranch(e.target.value)}
+      className="p-2 border border-gray-300 rounded"
+    >
+      {BRANCH_OPTIONS.map((option) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </select>
+  </div>
+  {/* Category Filter */}
+<div className="flex items-center gap-2">
+  <label htmlFor="rider-category-filter" className="font-semibold">
+    Category:
+  </label>
+  <select
+    id="rider-category-filter"
+    value={filterCategory}
+    onChange={(e) => setFilterCategory(e.target.value)}
+    className="p-2 border border-gray-300 rounded"
+  >
+    {CATEGORY_OPTIONS.map((option) => (
+      <option key={option.value} value={option.value}>
+        {option.label}
+      </option>
+    ))}
+  </select>
+</div>
+
+</div>
+
         </div>
 
         <ListTable

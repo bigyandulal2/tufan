@@ -14,7 +14,7 @@ const AllBranches = () => {
 
   const [showRefreshButton, setShowRefreshButton] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-
+   console.log("branch",branch);
   useEffect(() => {
     if (!fetchedRef.current && status === 'idle') {
       fetchedRef.current = true;
