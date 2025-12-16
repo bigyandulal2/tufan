@@ -90,12 +90,7 @@ const ListTable = ({
               ))
             ) : (
               <>
-                <button
-                  className="px-4 items-end text-white  rounded-[90px] text-sm bg-[#f04f18]"
-                >
-                  All ({data.length})
-                </button>
-          
+               
               {
                 !isManager() && <button
                 onClick={handleOnCreate}

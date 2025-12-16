@@ -1,84 +1,81 @@
-
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import ListTable from '../../../components/ui/BranchTable';
 import { fetchBranches } from '../../../redux/branchSlice';
 import {
-  selectPendingRidersItems,
-  selectPendingRidersStatus,
   selectRiderImages,
   selectRidersItems,
   selectRidersStatus,
   selectRidersPages,
-  selectRidersState
 } from '../../../redux/rider/riderSelectors';
 import {
   fetchPaginatedRiders,
-  fetchPendingRiders,
+  fetchPaginatedRidersWithFilters,
   fetchRiderImage,
   setCurrentPage,
 } from '../../../redux/rider/ridersSlice';
 import RenderImage from './RiderImage';
 
+const STATUS_OPTIONS = [
+  { label: 'All Riders', value: 'All' },
+  { label: 'Pending', value: 'Pending' },
+  { label: 'Rejected', value: 'Rejected' },
+  { label: 'Approved', value: 'Approved' },
+];
+
 const AllRiders = () => {
   const dispatch = useDispatch();
-  const [activeTab, setActiveTab] = useState('All');
+  const [filterStatus, setFilterStatus] = useState('All');
   const fetchedImagesRef = useRef(new Set());
 
   // Redux state
   const riders = useSelector(selectRidersItems) ?? [];
-  const realData=useSelector(selectRidersState);
-  console.log("realData is hereeeeee",realData)
-  const pendingRiders = useSelector(selectPendingRidersItems) ?? [];
   const riderImages = useSelector(selectRiderImages) ?? {};
   const ridersStatus = useSelector(selectRidersStatus);
-  const pendingStatus = useSelector(selectPendingRidersStatus);
   const branches = useSelector((state) => state.branches.items) ?? [];
   const currentPage = useSelector((state) => state.riders.currentPage) ?? 1;
   const riderPages = useSelector(selectRidersPages) ?? 1;
-  console.log("riderpagesss here",riderPages);
   const pageNumbers = Array.from({ length: riderPages }, (_, i) => i + 1);
-  const isPendingTab = activeTab === 'Pending';
-  const dataToDisplay = isPendingTab ? pendingRiders : riders;
-  const dataStatus = isPendingTab ? pendingStatus : ridersStatus;
 
-  // Reset page when tab changes
-  // useEffect(() => {
-  //   dispatch(setCurrentPage(1));
-  // }, [activeTab, dispatch]);
+  // Reset page when filter changes
+  useEffect(() => {
+    dispatch(setCurrentPage(1));
+  }, [filterStatus, dispatch]);
 
   // Fetch branches once
   useEffect(() => {
     dispatch(fetchBranches());
   }, [dispatch]);
 
-  // Fetch riders for current page
+  // Fetch riders for current page & filter
   useEffect(() => {
-    if (isPendingTab) {
-      dispatch(fetchPendingRiders());
+    if (filterStatus === 'All') {
+      // Use the “All riders” paginated API
+      dispatch(fetchPaginatedRiders(currentPage - 1));
     } else {
-      dispatch(fetchPaginatedRiders(currentPage - 1)); // API is 0-based
+      // Use filtered API
+      dispatch(fetchPaginatedRidersWithFilters({ pageNumber: currentPage - 1, status: filterStatus }));
     }
-  }, [dispatch, currentPage, isPendingTab]);
+  }, [dispatch, currentPage, filterStatus]);
 
   // Fetch rider images
   useEffect(() => {
-    if (dataStatus !== 'succeeded' || !Array.isArray(dataToDisplay)) return;
+    if (ridersStatus !== 'succeeded' || !Array.isArray(riders)) return;
 
-    dataToDisplay.forEach((r) => {
+    riders.forEach((r) => {
       const img = r?.user?.imageName;
       if (img && !riderImages[img] && !fetchedImagesRef.current.has(img)) {
         fetchedImagesRef.current.add(img);
         dispatch(fetchRiderImage(img));
       }
     });
-  }, [dataToDisplay, dataStatus, riderImages, dispatch]);
+  }, [riders, ridersStatus, riderImages, dispatch]);
 
   // Format table data
   const formattedData = useMemo(() => {
-    if (!Array.isArray(dataToDisplay)) return [];
+    if (!Array.isArray(riders)) return [];
 
-    return dataToDisplay.map((rider) => {
+    return riders.map((rider) => {
       const imgName = rider?.user?.imageName;
       const imageUrl = riderImages[imgName];
       const branch = branches.find(
@@ -95,24 +92,16 @@ const AllRiders = () => {
         status: rider?.status ?? 'inactive',
       };
     });
-  }, [dataToDisplay, riderImages, branches]);
+  }, [riders, riderImages, branches]);
 
-  // Rider counts
+  // Rider counts for current page
+  const totalRidersInView = riders.length;
   const carRiderCount = riders.filter(
     (r) => r?.category?.categoryTitle?.toLowerCase() === 'car'
   ).length;
-
   const bikeRiderCount = riders.filter(
     (r) => r?.category?.categoryTitle?.toLowerCase() === 'bike'
   ).length;
-
-  const tabButtons = useMemo(
-    () => [
-      { label: `All (${riders.length})`, value: 'All' },
-      { label: `Pending (${pendingRiders.length})`, value: 'Pending' },
-    ],
-    [riders.length, pendingRiders.length]
-  );
 
   return (
     <div className="flex-1">
@@ -121,9 +110,30 @@ const AllRiders = () => {
           Riders List
         </h1>
 
-        <div className="flex gap-4 mb-4">
-          <p className="font-semibold">Car: {carRiderCount}</p>
-          <p className="font-semibold">Bike: {bikeRiderCount}</p>
+        {/* Status Dropdown */}
+        <div className="flex justify-between items-center mb-4">
+          <div className="flex gap-4">
+            <p className="font-semibold">Total on Page: {totalRidersInView}</p>
+            <p className="font-semibold">Car on Page: {carRiderCount}</p>
+            <p className="font-semibold">Bike on Page: {bikeRiderCount}</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <label htmlFor="rider-status-filter" className="font-semibold">
+              Filter by Status:
+            </label>
+            <select
+              id="rider-status-filter"
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              className="p-2 border border-gray-300 rounded"
+            >
+              {STATUS_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         <ListTable
@@ -132,9 +142,6 @@ const AllRiders = () => {
           rowDataKeys={['id', 'name', 'image', 'category', 'BranchName', 'balance', 'status']}
           module="riders"
           searchableFields={['name', 'category', 'status', 'BranchName']}
-          buttons={tabButtons}
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
         />
 
         {/* Pagination */}
@@ -177,4 +184,3 @@ const AllRiders = () => {
 };
 
 export default AllRiders;
-

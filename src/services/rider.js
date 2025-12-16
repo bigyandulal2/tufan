@@ -29,6 +29,36 @@ export const getRidersPaginated = async ({ pageNumber = 0, pageSize = 10, sortBy
     }
   );
 };
+// get riders with paginated filterss
+// Rider pagination with filters: status, categoryId, branchId
+export const getRidersPaginatedWithFilters = async ({
+  pageNumber = 0,
+  pageSize = 10,
+  sortBy = 'id',
+  sortDir = 'asc',
+  status,
+  categoryId,
+  branchId
+} = {}) => {
+  // Build query string dynamically
+  const params = new URLSearchParams();
+  params.append('pageNumber', pageNumber);
+  params.append('pageSize', pageSize);
+  params.append('sortBy', sortBy);
+  params.append('sortDir', sortDir);
+
+  if (status) params.append('status', status);
+  if (categoryId) params.append('categoryId', categoryId);
+  if (branchId) params.append('branchId', branchId);
+
+  return handleRequest(
+    () => privateAxios.get(`/riders?${params.toString()}`),
+    {
+      onErrorMessage: 'Failed to fetch riders',
+    }
+  );
+};
+
 
 
 /*export const loadPendingRiders = async () => {

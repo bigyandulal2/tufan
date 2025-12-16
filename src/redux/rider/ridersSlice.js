@@ -6,7 +6,8 @@ import {
   getRiderById,
   loadPendingRiders,
   getRiderImage,
-  getRidersPaginated
+  getRidersPaginated,
+  getRidersPaginatedWithFilters
 } from '../../services/rider';
 
 // 🔹 All Riders
@@ -28,6 +29,29 @@ export const fetchPaginatedRiders = createAsyncThunk(
       // Call the reusable API function
       const response = await getRidersPaginated({ pageNumber });
       return response; // This returns the full pagination object from API
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || 'Error fetching riders'
+      );
+    }
+  }
+);
+// fetch riders by pagination with filters
+export const fetchPaginatedRidersWithFilters = createAsyncThunk(
+  'riders/fetchPaginatedRidersWithFilters',
+  async (
+    { pageNumber = 0, status, categoryId, branchId } = {},
+    { rejectWithValue }
+  ) => {
+    try {
+      // Call the reusable API function with filters
+      const response = await getRidersPaginatedWithFilters({
+        pageNumber,
+        status,
+        categoryId,
+        branchId,
+      });
+      return response; // Returns full pagination object from API
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message || 'Error fetching riders'
@@ -190,8 +214,22 @@ const ridersSlice = createSlice({
       .addCase(fetchPaginatedRiders.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload;
-      });
-  },
+      })
+    // Paginated Riders with Filters
+.addCase(fetchPaginatedRidersWithFilters.pending, (state) => {
+  state.status = 'loading';
+})
+.addCase(fetchPaginatedRidersWithFilters.fulfilled, (state, action) => {
+  state.status = 'succeeded';
+  state.items = action.payload.content ?? [];      // store only content array
+  state.totalPages = action.payload.totalPages ?? 1; // save total pages for pagination
+})
+.addCase(fetchPaginatedRidersWithFilters.rejected, (state, action) => {
+  state.status = 'failed';
+  state.error = action.payload;
+});
+    
+    },
 });
 
 export const { clearRiders,setCurrentPage } = ridersSlice.actions;
