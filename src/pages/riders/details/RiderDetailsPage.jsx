@@ -6,7 +6,7 @@ import { fetchRiderById } from '../../../redux/rider/ridersSlice';
 import RiderDetails from './RiderDetails';
 import Button from '../../../components/ui/Button';
 import { IoArrowBackCircle } from "react-icons/io5";
-
+import { selectRidersItems } from '../../../redux/rider/riderSelectors';
 import {
   approveRiderApi,
   deleteRiderApi,
@@ -20,8 +20,12 @@ const RiderDetailsPage = () => {
   const [rejecting, setRejecting] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { items: riders, selectedRider, status } = useSelector((state) => state.riders);
+  // const { items: riders, selectedRider, status } = useSelector((state) => state.riders);
 
+// riders
+const riders = useSelector(selectRidersItems);
+const selectedRider = useSelector((state) => state.riders.selectedRider);
+const status = useSelector((state) => state.riders.status);
   const rider = useMemo(() => {
     return riders.find((r) => String(r.id) === String(id)) || selectedRider;
   }, [riders, selectedRider, id]);
@@ -36,7 +40,6 @@ const RiderDetailsPage = () => {
       dispatch(fetchRiderById(id));
     }
   }, [dispatch, id]);
-
 
 
 
