@@ -13,44 +13,42 @@ import {
   fetchPendingRiders,
   fetchRiderImage,
   fetchRiders,
-  setCurrentPage
+  setCurrentPage,
 } from '../../../redux/rider/ridersSlice';
 import RenderImage from './RiderImage';
 
 const AllRiders = () => {
   const dispatch = useDispatch();
 
-  // State for managing active tab and pagination
   const [activeTab, setActiveTab] = useState('All');
-  // const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 15;
-
   const fetchedImagesRef = useRef(new Set());
 
-  // Redux selectors
-  const riders = useSelector(selectRidersItems);
-  const pendingRiders = useSelector(selectPendingRidersItems);
-  const riderImages = useSelector(selectRiderImages);
+  // ✅ FORCE ARRAYS (IMPORTANT)
+  const riders = useSelector(selectRidersItems) ?? [];
+  const pendingRiders = useSelector(selectPendingRidersItems) ?? [];
+  const riderImages = useSelector(selectRiderImages) ?? {};
   const ridersStatus = useSelector(selectRidersStatus);
   const pendingStatus = useSelector(selectPendingRidersStatus);
-  const branches = useSelector((state) => state.branches.items);
-  const currentPage=useSelector((state)=>state.riders.currentPage)
-
+  const branches = useSelector((state) => state.branches.items) ?? [];
+  const currentPage = useSelector((state) => state.riders.currentPage) ?? 1;
+   console.log("riderssss here",riders);
   const isPendingTab = activeTab === 'Pending';
+
   const dataToDisplay = isPendingTab ? pendingRiders : riders;
   const dataStatus = isPendingTab ? pendingStatus : ridersStatus;
 
-  //Reset page to 1
-  // useEffect(() => {
-  //   dispatch(setCurrentPage(1));
-  // }, [activeTab,dispatch]);
+  // ✅ Reset page on tab change
+  useEffect(() => {
+    dispatch(setCurrentPage(1));
+  }, [activeTab, dispatch]);
 
-  // Fetch all branches
+  // Fetch branches
   useEffect(() => {
     dispatch(fetchBranches());
   }, [dispatch]);
 
-  // Fetch riders based on the active tab
+  // Fetch riders based on tab
   useEffect(() => {
     if (isPendingTab) {
       dispatch(fetchPendingRiders());
@@ -59,88 +57,82 @@ const AllRiders = () => {
     }
   }, [dispatch, isPendingTab]);
 
-  // Fetch rider images if not already available
+  // Fetch rider images
   useEffect(() => {
-    if (dataStatus !== 'succeeded') return;
+    if (dataStatus !== 'succeeded' || !Array.isArray(dataToDisplay)) return;
 
-    const imagesToFetch = dataToDisplay
-      .map((r) => r?.user?.imageName)
-      .filter((img) => img && !riderImages[img] && !fetchedImagesRef.current.has(img));
-
-    imagesToFetch.forEach((img) => {
-      fetchedImagesRef.current.add(img);
-      dispatch(fetchRiderImage(img));
+    dataToDisplay.forEach((r) => {
+      const img = r?.user?.imageName;
+      if (img && !riderImages[img] && !fetchedImagesRef.current.has(img)) {
+        fetchedImagesRef.current.add(img);
+        dispatch(fetchRiderImage(img));
+      }
     });
   }, [dataToDisplay, dataStatus, riderImages, dispatch]);
 
-  // Format data for the table
+  // Format table data
   const formattedData = useMemo(() => {
-    return (dataToDisplay || []).map((rider) => {
+    if (!Array.isArray(dataToDisplay)) return [];
+
+    return dataToDisplay.map((rider) => {
       const imgName = rider?.user?.imageName;
       const imageUrl = riderImages[imgName];
-      const riderBranchId = rider?.user?.branchId;
-
-      const branch = branches.find((b) => String(b.id) === String(riderBranchId));
-      const branchName = branch?.name || 'N/A';
+      const branch = branches.find(
+        (b) => String(b.id) === String(rider?.user?.branchId)
+      );
 
       return {
-        id: rider.id,
-        name: rider.user?.name || 'No Name',
+        id: rider?.id ?? '—',
+        name: rider?.user?.name ?? 'No Name',
         image: <RenderImage imageUrl={imageUrl} />,
-        category: rider.category?.categoryTitle || 'N/A',
-        BranchName: branchName,
-        balance: rider.balance ?? 0,
-        status: rider.status || 'inactive',
+        category: rider?.category?.categoryTitle ?? 'N/A',
+        BranchName: branch?.name ?? 'N/A',
+        balance: rider?.balance ?? 0,
+        status: rider?.status ?? 'inactive',
       };
     });
   }, [dataToDisplay, riderImages, branches]);
 
-  // New: Pagination logic
-  const totalPages = Math.ceil(formattedData.length / itemsPerPage);
+  // Pagination
+  const totalPages = Math.max(
+    1,
+    Math.ceil(formattedData.length / itemsPerPage)
+  );
 
   const paginatedData = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage;
     return formattedData.slice(start, start + itemsPerPage);
   }, [formattedData, currentPage]);
 
+  // Rider counts
   const carRiderCount = riders.filter(
-    rider => rider.category?.categoryTitle?.toLowerCase() === "car"
+    (r) => r?.category?.categoryTitle?.toLowerCase() === 'car'
   ).length;
 
   const bikeRiderCount = riders.filter(
-    rider => rider.category?.categoryTitle?.toLowerCase() === "bike"
+    (r) => r?.category?.categoryTitle?.toLowerCase() === 'bike'
   ).length;
 
-
-  // Buttons
   const tabButtons = useMemo(
     () => [
-
       { label: `All (${riders.length})`, value: 'All' },
       { label: `Pending (${pendingRiders.length})`, value: 'Pending' },
     ],
     [riders.length, pendingRiders.length]
   );
 
-  console.log('Riders:', riders);
-
   return (
-
     <div className="flex-1">
       <div className="border border-black rounded-[10px] p-6 h-[736px] overflow-auto">
         <h1 className="text-[20px] font-bold text-black text-center mb-6">
           Riders List
         </h1>
-        <div className='flex justify-start items-center gap-x-4 '>
-          <p className='text-[16px] font-semibold text-black' >
-            Car: {carRiderCount}
-          </p>
-          <p className='text-[16px] font-semibold text-black' >
-            Bike: {bikeRiderCount}
-          </p>
+
+        <div className="flex gap-4 mb-4">
+          <p className="font-semibold">Car: {carRiderCount}</p>
+          <p className="font-semibold">Bike: {bikeRiderCount}</p>
         </div>
 
-        {/* Table for displaying riders */}
         <ListTable
           data={paginatedData}
           headers={['ID', 'Name', 'Image', 'Category', 'Branch Name', 'Balance', 'Status']}
@@ -150,68 +142,32 @@ const AllRiders = () => {
           buttons={tabButtons}
           activeTab={activeTab}
           setActiveTab={setActiveTab}
-
         />
 
-        {/* rider list  */}
-        <div className="flex justify-center items-center gap-2 mt-4">
+        {/* Pagination */}
+        <div className="flex justify-center gap-2 mt-4">
           <button
-            onClick={() =>   dispatch(setCurrentPage(Math.max(currentPage - 1, 1)))}
+            onClick={() => dispatch(setCurrentPage(Math.max(currentPage - 1, 1)))}
             disabled={currentPage === 1}
-            className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+            className="px-3 py-1 bg-gray-200 rounded"
           >
             Prev
           </button>
 
-          {/* First page */}
-          {currentPage > 2 && (
-            <>
-              <button
-                onClick={() => dispatch(setCurrentPage(1))}
-                className={`px-3 py-1 rounded ${currentPage === 1 ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-              >
-                1
-              </button>
-              {currentPage > 3 && <span className="px-2">...</span>}
-            </>
-          )}
-
-          {/* Pages around current */}
-          {Array.from({ length: totalPages }, (_, i) => i + 1)
-            .filter((page) => Math.abs(currentPage - page) <= 1)
-            .map((page) => (
-              <button
-                key={page}
-                onClick={() => dispatch(setCurrentPage(page))}
-                className={`px-3 py-1 rounded ${currentPage === page ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-              >
-                {page}
-              </button>
-            ))}
-
-          {/* Last page */}
-          {currentPage < totalPages - 1 && (
-            <>
-              {currentPage < totalPages - 2 && <span className="px-2">...</span>}
-              <button
-                onClick={() => dispatch(setCurrentPage(totalPages))}
-                className={`px-3 py-1 rounded ${currentPage === totalPages ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-              >
-                {totalPages}
-              </button>
-            </>
-          )}
+          <span className="px-3 py-1 bg-blue-500 text-white rounded">
+            {currentPage}
+          </span>
 
           <button
-            onClick={() =>  dispatch(setCurrentPage(Math.min(currentPage + 1, totalPages)))}
+            onClick={() =>
+              dispatch(setCurrentPage(Math.min(currentPage + 1, totalPages)))
+            }
             disabled={currentPage === totalPages}
-            className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+            className="px-3 py-1 bg-gray-200 rounded"
           >
             Next
           </button>
         </div>
-
-
       </div>
     </div>
   );

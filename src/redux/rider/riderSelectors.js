@@ -5,13 +5,13 @@ const selectRidersState = (state) => state.riders;
 // 🔹 All Riders
 export const selectRidersItems = createSelector(
   [selectRidersState],
-  (ridersState) => ridersState?.items || []
+  (ridersState) => ridersState?.items?.content || []
 );
 
 // 🔹 Pending Riders
 export const selectPendingRidersItems = createSelector(
   [selectRidersState],
-  (ridersState) => ridersState?.pendingItems || []
+  (ridersState) => ridersState?.pendingItems?.content || []
 );
 
 // 🔹 Selected Rider
