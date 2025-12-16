@@ -20,7 +20,7 @@ const STATUS_OPTIONS = [
   { label: 'All Riders', value: 'All' },
   { label: 'Pending', value: 'Pending' },
   { label: 'Rejected', value: 'Rejected' },
-  { label: 'Approved', value: 'Approved' },
+  { label: 'Approved', value: '' },
 ];
 
 const AllRiders = () => {
@@ -38,9 +38,7 @@ const AllRiders = () => {
   const pageNumbers = Array.from({ length: riderPages }, (_, i) => i + 1);
 
   // Reset page when filter changes
-  useEffect(() => {
-    dispatch(setCurrentPage(1));
-  }, [filterStatus, dispatch]);
+
 
   // Fetch branches once
   useEffect(() => {
