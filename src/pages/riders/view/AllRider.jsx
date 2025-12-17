@@ -14,6 +14,9 @@ import {
   fetchPaginatedRidersWithFilters,
   fetchRiderImage,
   setCurrentPage,
+  setFilterBranch,
+  setFilterStatus,
+  setFilterCategory
 } from '../../../redux/rider/ridersSlice';
 import RenderImage from './RiderImage';
 
@@ -41,7 +44,7 @@ const CATEGORY_OPTIONS = [
 
 const AllRiders = () => {
   const dispatch = useDispatch();
-  const [filterStatus, setFilterStatus] = useState('All');
+
   const fetchedImagesRef = useRef(new Set());
 
   // Redux state
@@ -52,10 +55,10 @@ const AllRiders = () => {
   const currentPage = useSelector((state) => state.riders.currentPage) ?? 1;
   const riderPages = useSelector(selectRidersPages) ?? 1;
   const pageNumbers = Array.from({ length: riderPages }, (_, i) => i + 1);
-
-  // filterbranch 
-  const [filterBranch, setFilterBranch] = useState('All');
-  const [filterCategory, setFilterCategory] = useState('All');
+  const filterBranch=useSelector((state)=>state.riders.filterBranch);
+  const filterCategory=useSelector((state)=>state.riders.filterCategory);
+  const filterStatus=useSelector((state)=>state.riders.filterStatus);
+ 
 
 // branch name
 const branch = useSelector((state) => state.branches.selectedBranch);
@@ -166,7 +169,7 @@ console.log(branch,"branch name hereee")
     <select
       id="rider-status-filter"
       value={filterStatus}
-      onChange={(e) => setFilterStatus(e.target.value)}
+      onChange={(e) => dispatch(setFilterStatus(e.target.value))}
       className="p-2 border border-gray-300 rounded"
     >
       {STATUS_OPTIONS.map((option) => (
@@ -187,7 +190,7 @@ console.log(branch,"branch name hereee")
     <select
       id="rider-branch-filter"
       value={filterBranch}
-      onChange={(e) => setFilterBranch(e.target.value)}
+      onChange={(e) => dispatch(setFilterBranch(e.target.value))}
       className="p-2 border border-gray-300 rounded"
     >
       {BRANCH_OPTIONS.map((option) => (
@@ -206,7 +209,7 @@ console.log(branch,"branch name hereee")
   <select
     id="rider-category-filter"
     value={filterCategory}
-    onChange={(e) => setFilterCategory(e.target.value)}
+    onChange={(e) => dispatch(setFilterCategory(e.target.value))}
     className="p-2 border border-gray-300 rounded"
   >
     {CATEGORY_OPTIONS.map((option) => (

@@ -123,7 +123,9 @@ const ridersSlice = createSlice({
     status: 'idle',
     pendingRidersStatus: 'idle',
     error: null,
-
+    filterBranch:"All",
+    filterCategory:"All",
+    filterStatus:"All",
     imageUrls: {},
     imageStatuses: {},
     imageErrors: {},
@@ -139,10 +141,22 @@ const ridersSlice = createSlice({
       state.imageUrls = {};
       state.imageStatuses = {};
       state.imageErrors = {};
+      state.filterBranch="All";
+      state.filterCategory="All";
+      state.filterStatus="All";
     },
     setCurrentPage: (state, action) => {
       state.currentPage = action.payload;
     },
+    setFilterBranch:(state,action)=>{
+       state.filterBranch=action.payload
+    },
+    setFilterCategory:(state,action)=>{
+       state.filterCategory=action.payload
+    },
+    setFilterStatus:(state,action)=>{
+      state.filterStatus=action.payload
+    }
 
   },
   extraReducers: (builder) => {
@@ -232,5 +246,5 @@ const ridersSlice = createSlice({
     },
 });
 
-export const { clearRiders,setCurrentPage } = ridersSlice.actions;
+export const { clearRiders,setCurrentPage,setFilterBranch,setFilterCategory,setFilterStatus } = ridersSlice.actions;
 export default ridersSlice.reducer;

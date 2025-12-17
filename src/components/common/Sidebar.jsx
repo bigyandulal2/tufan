@@ -3,7 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { doLogout, getCurrentUserDetail } from '../../auth';
 import plusIcon from '../../assets/plus.jpg';
 import { ROLE_MANAGER } from '../../constant/role';
-
+import { clearRiders } from '../../redux/rider/ridersSlice';
+import { useDispatch } from 'react-redux';
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -13,7 +14,7 @@ const Sidebar = () => {
   const roles = user?.roles?.map(role => role.name) || [];
 
   const isManager = roles.includes(ROLE_MANAGER);
-
+  const dispatch=useDispatch();
   const menuItems = [
     { name: 'Branches', icon: plusIcon, path: '/admin/branches',hiddenFor:['manager'] },
     { name: 'Manager', icon: plusIcon, path: '/admin/managers', hiddenFor: ['manager'] },
@@ -39,6 +40,7 @@ const Sidebar = () => {
   const handleLogout = () => {
     doLogout(() => {
       navigate("/login");
+      dispatch(clearRiders());
     });
   };
 
