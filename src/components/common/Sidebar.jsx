@@ -8,7 +8,7 @@ import { ROLE_MANAGER } from '../../constant/role';
 const Sidebar = () => {
   const navigate = useNavigate();
 
-  // ✅ Get user role
+  // a Get user role
   const user = getCurrentUserDetail();
   const roles = user?.roles?.map(role => role.name) || [];
 

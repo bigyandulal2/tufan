@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import ListTable from '../../../components/ui/BranchTable';
 import { fetchBranches } from '../../../redux/branchSlice';
+import { isManager } from '../../../auth';
 import {
   selectRiderImages,
   selectRidersItems,
@@ -56,7 +57,9 @@ const AllRiders = () => {
   const [filterBranch, setFilterBranch] = useState('All');
   const [filterCategory, setFilterCategory] = useState('All');
 
-  console.log("riderss",riders);
+// branch name
+const branch = useSelector((state) => state.branches.selectedBranch);
+console.log(branch,"branch name hereee")
 
   // Fetch branches once
   useEffect(() => {
@@ -175,6 +178,8 @@ const AllRiders = () => {
   </div>
 
   {/* Branch Filter */}
+ {
+  !isManager() &&
   <div className="flex items-center gap-2">
     <label htmlFor="rider-branch-filter" className="font-semibold">
       Branch:
@@ -192,6 +197,7 @@ const AllRiders = () => {
       ))}
     </select>
   </div>
+ } 
   {/* Category Filter */}
 <div className="flex items-center gap-2">
   <label htmlFor="rider-category-filter" className="font-semibold">

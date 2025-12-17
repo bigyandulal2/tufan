@@ -46,7 +46,7 @@ const LoginPage = () => {
         response,
         () => {
           // Success: Navigate to dashboard
-          navigate("/admin/branches");
+          navigate("/admin/riders");
         },
         (errorMsg) => {
           // Unauthorized role
