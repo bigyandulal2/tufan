@@ -19,6 +19,7 @@ import {
   setFilterCategory,
 } from "../../../redux/rider/ridersSlice";
 import RenderImage from "./RiderImage";
+import { exportRidersToExcel } from "../../../utils/exportRidersToExcel";
 
 const STATUS_OPTIONS = [
   { label: "All Riders", value: "All" },
@@ -58,10 +59,10 @@ const AllRiders = () => {
   const filterBranch = useSelector((state) => state.riders.filterBranch);
   const filterCategory = useSelector((state) => state.riders.filterCategory);
   const filterStatus = useSelector((state) => state.riders.filterStatus);
-
+  console.log(riders,"riders hereeee");
   // branch name
   const branch = useSelector((state) => state.branches.selectedBranch);
-  console.log(branch, "branch name hereee");
+  // console.log(branch, "branch name hereee");
 
   // Fetch branches once
   useEffect(() => {
@@ -235,8 +236,17 @@ const AllRiders = () => {
           module="riders"
           searchableFields={["name", "category", "status", "BranchName"]}
         />
+{/* excel converting button starts */}
+<div className="flex justify-end my-4">
+  <button
+    onClick={() => exportRidersToExcel(riders)}
+    className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+  >
+    Export to Excel
+  </button>
+</div>
+{/* excel converting button ends */}
 
-        {/* Pagination */}
         {/* Pagination */}
         <div className="flex justify-center items-center gap-2 mt-4">
           {/* Prev */}
