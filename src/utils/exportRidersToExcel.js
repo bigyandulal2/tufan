@@ -1,66 +1,104 @@
 import * as XLSX from "xlsx";
+import { loadAllVehicle } from "../services/vehicle";
 
+/* Convert Java LocalDateTime array to readable string */
 const formatJavaDate = (arr) => {
   if (!Array.isArray(arr)) return "";
   const [y, m, d, h, min, s] = arr;
   return `${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")} ${String(h).padStart(2, "0")}:${String(min).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 };
 
-export const exportRidersToExcel = (riders) => {
+/* Branch ID → Branch Name */
+const BRANCH_MAP = {
+  "1": "Bagmati",
+  "4": "Koshi",
+  "63": "Madhes",
+  "64": "Gandaki",
+  "65": "Karnali",
+  "66": "Sudurpaschim",
+  "67": "Durgaprasai",
+};
+
+const getBranchName = (branchId) => {
+  if (branchId === undefined || branchId === null) {
+    return "Not Assigned";
+  }
+  return BRANCH_MAP[String(branchId)] || "Unknown Branch";
+};
+
+
+export const exportRidersToExcel = async (riders) => {
   if (!Array.isArray(riders) || riders.length === 0) {
-    alert("No data to export");
+    alert("No riders to export");
     return;
   }
 
-  const formattedData = riders.map((rider) => ({
-    /* Rider Info */
-    Rider_ID: rider?.id ?? "",
-    Status: rider?.status ?? "",
-    Status_Message: rider?.statusMessage ?? "",
-    Balance: rider?.balance ?? 0,
+  const rows = [];
 
-    /* Category */
-    Category_ID: rider?.category?.categoryId ?? "",
-    Category_Name: rider?.category?.categoryTitle ?? "",
+  for (const rider of riders) {
+    const userId = rider?.user?.id;
 
-    /* Dates */
-    Added_Date: formatJavaDate(rider?.addedDate),
-    Updated_Date: formatJavaDate(rider?.updatedDate),
-    Date_of_Birth: rider?.date_Of_Birth ?? "",
+    let vehicles = [];
+    try {
+      vehicles = userId ? await loadAllVehicle(userId) : [];
+    } catch (err) {
+      console.error(`Failed fetching vehicles for user ${userId}`, err);
+    }
 
-    /* Documents */
-    Citizenship_Front: rider?.citizen_Front ?? "",
-    Citizenship_Back: rider?.citizen_Back ?? "",
-    Citizenship_No: rider?.citizen_No ?? "",
-    Driving_License_No: rider?.driver_License ?? "",
-    Driving_License_Image: rider?.license_Image ?? "",
-    NID_No: rider?.nid_No ?? "",
-    NID_Image: rider?.nid_Img ?? "",
-    Selfie_With_ID: rider?.selfieWithIdCard ?? "",
+    /* Rider with NO vehicles */
+    if (!vehicles || vehicles.length === 0) {
+      rows.push({
+        Rider_ID: rider?.id ?? "",
+        Name: rider?.user?.name ?? "",
+        Email: rider?.user?.email ?? "",
+        Mobile: rider?.user?.mobileNo ?? "",
+        Status: rider?.status ?? "",
+        Category: rider?.category?.categoryTitle ?? "",
+        Branch: getBranchName(rider?.user?.branchId),
+        Balance: rider?.balance ?? 0,
+        Added_Date: formatJavaDate(rider?.addedDate),
 
-    /* User Info */
-    User_ID: rider?.user?.id ?? "",
-    Name: rider?.user?.name ?? "",
-    Email: rider?.user?.email ?? "",
-    Mobile: rider?.user?.mobileNo ?? "",
-    Branch_ID: rider?.user?.branchId ?? "",
-    Modes: rider?.user?.modes ?? "",
-    Profile_Image: rider?.user?.imageName ?? "",
+        Vehicle_Type: "No Vehicle",
+        Vehicle_Brand: "",
+        Vehicle_Number: "",
+        Production_Year: "",
+        Vehicle_Category: "",
+        Vehicle_Image: "",
+        BillBook_1: "",
+        BillBook_2: "",
+      });
+      continue;
+    }
 
-    // /* Device Info */
-    // Device_Brand: rider?.user?.deviceInfo?.brand ?? "",
-    // Device_Model: rider?.user?.deviceInfo?.model ?? "",
-    // Android_Version: rider?.user?.deviceInfo?.androidVersion ?? "",
+    /* Rider WITH vehicles → one row per vehicle */
+    vehicles.forEach((vehicle, index) => {
+      rows.push({
+        Rider_ID: rider?.id ?? "",
+        Name: rider?.user?.name ?? "",
+        Email: rider?.user?.email ?? "",
+        Mobile: rider?.user?.mobileNo ?? "",
+        Status: rider?.status ?? "",
+        Category: rider?.category?.categoryTitle ?? "",
+        // Branch: getBranchName(rider?.user?.branchId),
+        Balance: rider?.balance ?? 0,
+        Added_Date: formatJavaDate(rider?.addedDate),
 
-    // /* Location */
-    // Latitude: rider?.user?.currentLocation?.latitude ?? "",
-    // Longitude: rider?.user?.currentLocation?.longitude ?? "",
-  }));
+     
+        Vehicle_Type: vehicle?.vehicleType ?? "",
+        Vehicle_Brand: vehicle?.vehicleBrand ?? "",
+        Vehicle_Number: vehicle?.vehicleNumber ?? "",
+        Production_Year: vehicle?.productionYear?.split("T")[0] ?? "",
+        Vehicle_Category: vehicle?.category?.categoryTitle ?? "",
+        Vehicle_Image: vehicle?.vechicleImg ?? "",
+        BillBook_1: vehicle?.billBook1 ?? "",
+        BillBook_2: vehicle?.billBook2 ?? "",
+      });
+    });
+  }
 
-  const worksheet = XLSX.utils.json_to_sheet(formattedData);
+  const worksheet = XLSX.utils.json_to_sheet(rows);
   const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Riders & Vehicles");
 
-  XLSX.utils.book_append_sheet(workbook, worksheet, "Riders");
-
-  XLSX.writeFile(workbook, "riders-export.xlsx");
+  XLSX.writeFile(workbook, "riders-with-vehicles.xlsx");
 };
