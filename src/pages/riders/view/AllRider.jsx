@@ -152,7 +152,7 @@ console.log(branch,"branch name hereee")
   ).length;
 
   return (
-    <div className="flex-1">
+    <div className="flex-1 w-[60vw] overflow-auto">
       <div className="border border-black rounded-[10px] p-6 h-[736px] overflow-auto">
         <h1 className="text-[20px] font-bold text-black text-center mb-6">
           Riders List
