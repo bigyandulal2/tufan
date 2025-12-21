@@ -24,16 +24,33 @@ export default function MapComponent() {
   ];
 
   // mapping provinces 
+  // const provinceBranchMap = {
+  //   "Koshi Province": 4,
+  //   "Madhesh Province": 378,
+  //   "Bagamati Province": 5,
+  //   "Gandaki Province": 1,
+  //   "Lumbini Province": 3,
+  //   "Karnali Province": 6,
+  //   "Sudurpashchim Province": 7,
+  // };
   const provinceBranchMap = {
     "Koshi Province": 4,
-    "Madhesh Province": 378,
-    "Bagamati Province": 5,
-    "Gandaki Province": 1,
-    "Lumbini Province": 3,
-    "Karnali Province": 6,
-    "Sudurpashchim Province": 7,
+    "Madhesh Province": 63,
+    "Bagamati Province": 1,
+    "Gandaki Province": 64,
+    "Lumbini Province": 67,
+    "Karnali Province": 65,
+    "Sudurpashchim Province": 66,
   };
-
+  // const BRANCH_MAP = {
+  //   "1": "Bagmati",
+  //   "4": "Koshi",
+  //   "63": "Madhes",
+  //   "64": "Gandaki",
+  //   "65": "Karnali",
+  //   "66": "Sudurpaschim",
+  //   "67": "Durgaprasai",
+  // };
 
   //Access Data from Api using contextapi
   const { selectedProvince, setSelectedProvince, apidata } = useContext(contextData)
