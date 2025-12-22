@@ -31,11 +31,11 @@ const BRANCH_OPTIONS = [
   { label: "All Branches", value: "All" },
   { label: "Bagmati", value: "1" },
   { label: "Koshi", value: "4" },
-  { label: "Madhes", value: "63" },
+  { label: "Madhesh", value: "63" },
   { label: "Gandaki", value: "64" },
   { label: "Karnali", value: "65" },
   { label: "Sudurpaschim", value: "66" },
-  { label: "Durgaprasai", value: "67" },
+  { label: "Lumbini", value: "67" },
 ];
 const CATEGORY_OPTIONS = [
   { label: "All Categories", value: "All" },
