@@ -25,7 +25,7 @@ const STATUS_OPTIONS = [
   { label: "All Riders", value: "All" },
   { label: "Pending", value: "Pending" },
   { label: "Rejected", value: "Rejected" },
-  { label: "Approved", value: "" },
+  { label: "Approved", value: "Approved" },
 ];
 const BRANCH_OPTIONS = [
   { label: "All Branches", value: "All" },
