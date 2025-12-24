@@ -130,6 +130,7 @@ function UsersList() {
         rowDataKeys={["id", "name", "email", "BranchName", "mobileNo"]}
         module="Users"
         searchableFields={["id", "name", "email", "mobileNo"]}
+        isRider={false}
       />
 
       {/* Pagination Controls */}

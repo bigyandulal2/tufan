@@ -15,6 +15,7 @@ const ListTable = ({
   buttons = [],
   activeTab,
   setActiveTab,
+  isRider=true
 }) => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
@@ -25,7 +26,7 @@ const ListTable = ({
       navigate(`/admin/${module}/${row.id}`);
     }
   };
-
+console.log("data from the branch table hereeee",data);
   const handleOnCreate = () => {
     if (onCreate) {
       onCreate();
@@ -62,8 +63,8 @@ const ListTable = ({
       {/* 🔹 Top Controls */}
       <div className="flex flex-wrap justify-end items-center gap-4 mb-4">
 
-        <div className="flex items-center gap-2">
-          <div className="relative">
+       <div className="flex items-center gap-2">
+       {isRider &&    <div className="relative">
             <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
             <input
               type="text"
@@ -72,7 +73,8 @@ const ListTable = ({
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-          </div>
+          </div>   }
+       
 
           <div className="flex gap-2 ">
             {Array.isArray(buttons) && buttons.length > 0 ? (

@@ -28,8 +28,8 @@ const Header = () => {
 
   if (!user.data) return null;
   if (!user.login) return <div className='hidden'>Please log in</div>;
-  if (status === 'loading') return <div>Loading branch...</div>;
-  if (status === 'failed') return <div>Error loading branch: {error}</div>;
+  // if (status === 'loading') return <div>Loading branch...</div>;
+  // if (status === 'failed') return <div>Error loading branch: {error}</div>;\
 
   return (
     <header className="w-full bg-white border-b border-[#dcdcdc]">
