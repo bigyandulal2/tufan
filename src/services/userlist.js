@@ -11,6 +11,31 @@ export const loadAllUsers = async () => {
     }
   );
 };
+export const getUsersPaginatedWithFilters = async ({
+  pageNumber = 0,
+  pageSize = 10,
+  sortBy = 'name',
+  sortDir = 'asc',
+  keyword = '',
+  branchId = ''
+} = {}) => {
+  // Build query string dynamically
+  const params = new URLSearchParams();
+  params.append('pageNumber', pageNumber);
+  params.append('pageSize', pageSize);
+  params.append('sortBy', sortBy);
+  params.append('sortDir', sortDir);
+
+  if (keyword) params.append('keyword', keyword);
+  if (branchId) params.append('branchId', branchId);
+
+  return handleRequest(
+    () => privateAxios.get(`/users/?${params.toString()}`),
+    {
+      onErrorMessage: 'Failed to fetch users',
+    }
+  );
+};
 
 // ✅ Create Vehicle
 export const createVehicle = async (userId, categoryId, payload) => {
